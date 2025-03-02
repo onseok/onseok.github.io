@@ -1,1 +1,4 @@
-Sitemap: https://onseok.github.io/sitemap.xml
+User-agent: *
+Allow: /
+Sitemap: https://devhudi.github.io/sitemap-index.xml
+Host: https://devhudi.github.io
