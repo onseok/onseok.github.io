@@ -1,4 +1,206 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[RSS Feed of onseok.blog]]></title><description><![CDATA[배움을 배포하기]]></description><link>https://onseok.blog</link><generator>GatsbyJS</generator><lastBuildDate>Thu, 06 Mar 2025 00:27:36 GMT</lastBuildDate><item><title><![CDATA[안드로이드 개발자가 놓치기 쉬운 UX (feat. 피츠의 법칙)]]></title><description><![CDATA[안드로이드 앱을 개발하다 보면 UI는 완벽해 보여도(적어도 프로덕트 디자이너분들께서 요구하는 사항들을 전부 만족하더라도?), 사용자 경험(UX) 측면에서 사소하지만 치명적인 요소들을 간과하기 쉽습니다. 특히 피츠의 법칙(Fitts’ Law…]]></description><link>https://onseok.blog/fitts-law/</link><guid isPermaLink="false">https://onseok.blog/fitts-law/</guid><pubDate>Tue, 04 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;안드로이드 앱을 개발하다 보면 UI는 완벽해 보여도(적어도 프로덕트 디자이너분들께서 요구하는 사항들을 전부 만족하더라도?), 사용자 경험(UX) 측면에서 사소하지만 치명적인 요소들을 간과하기 쉽습니다. 특히 &lt;strong&gt;피츠의 법칙(Fitts’ Law)&lt;/strong&gt;을 이해하면 버튼 터치 영역, 제스처 동작 등에서 흔히 놓치는 UX 포인트를 개선할 수 있습니다. 이번 글에서는 피츠의 법칙 개념부터 시작해, 안드로이드 개발자가 챙겨야 할 UX 요소들과 실제 개선 방법을 살펴보겠습니다.&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[RSS Feed of onseok.blog]]></title><description><![CDATA[배움을 배포하기]]></description><link>https://onseok.blog</link><generator>GatsbyJS</generator><lastBuildDate>Thu, 06 Mar 2025 16:42:11 GMT</lastBuildDate><item><title><![CDATA[JUnit4 vs JUnit5 그리고 Robolectric 호환성 문제 해결하기]]></title><description><![CDATA[안드로이드 개발에서 테스팅은 애플리케이션의 품질을 보장하는 중요한 단계입니다. 특히 JUnit은 자바와 코틀린 환경에서 가장 널리 사용되는 테스팅 프레임워크이지만, JUnit4와 JUnit…]]></description><link>https://onseok.blog/junit4-junit5/</link><guid isPermaLink="false">https://onseok.blog/junit4-junit5/</guid><pubDate>Fri, 07 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;안드로이드 개발에서 테스팅은 애플리케이션의 품질을 보장하는 중요한 단계입니다. 특히 JUnit은 자바와 코틀린 환경에서 가장 널리 사용되는 테스팅 프레임워크이지만, JUnit4와 JUnit5 사이에는 상당한 차이가 있으며 이는 안드로이드 테스트 환경에서 여러 문제를 일으킬 수 있습니다. 이 글에서는 JUnit4와 JUnit5의 주요 차이점, Robolectric이 JUnit4만 지원하는 제약을 해결하는 방법에 대해 알아보겠습니다.&lt;/p&gt;
+&lt;h2 id=&quot;JUnit4-vs-JUnit5&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#JUnit4-vs-JUnit5&quot; aria-label=&quot;JUnit4 vs JUnit5 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;JUnit4 vs JUnit5&lt;/h2&gt;
+&lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/1c26ab8af3ae58d148c3a3af21258636/f759a/junit5-release.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 39.411764705882355%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA/klEQVR42qWQ2Y7DIAxF+/+fGCmZqE0ChD1kgSy6xYw6b5OXIlkXG3N94HGuK44wYXcWu3f4dj3OJSBJgaRGJKO+N4wxYp5nLMuCKQSEHGumpjop1VNKf/l1XfeGWmv8tC1e3Qt1XaNpGgzDACEEuq5D3/cwxkBKWfbHcdwb0nSi+BCQfoi2bStnRE1KOb3mPM//Dam5qqpCpJQqwTkvRBSMsULGOYOSI9jQ54HxnpAmT9ME730hIKWciEkp5mWFCTtGG6FchPYbhF3hQsxfonNP+DWkS865QkNk1lqM41hIqU57k/9ZG4+nCKh7h7pzePKAlgUwNWdyCZPvkeEbOw1rxzpwrroAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;junit5 release&apos; title=&apos;&apos; src=&apos;/static/1c26ab8af3ae58d148c3a3af21258636/ca1dc/junit5-release.png&apos; srcset=&apos;/static/1c26ab8af3ae58d148c3a3af21258636/e7570/junit5-release.png 170w,
+/static/1c26ab8af3ae58d148c3a3af21258636/f46e7/junit5-release.png 340w,
+/static/1c26ab8af3ae58d148c3a3af21258636/ca1dc/junit5-release.png 680w,
+/static/1c26ab8af3ae58d148c3a3af21258636/f759a/junit5-release.png 1018w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;JUnit5&lt;/code&gt;는 &lt;a href=&quot;https://junit.org/junit5/docs/5.1.0/release-notes/index.html#release-notes-5.0.0&quot;&gt;2017년 9월 10일에 처음 릴리즈&lt;/a&gt; 되었습니다. &lt;code class=&quot;language-text&quot;&gt;JUnit4&lt;/code&gt;보다 여러 면에서 개선되었는데,가장 큰 차이점들을 살펴보겠습니다.&lt;/p&gt;
+&lt;h3 id=&quot;1-아키텍처-차이&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%B0%A8%EC%9D%B4&quot; aria-label=&quot;1 아키텍처 차이 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;1. 아키텍처 차이&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;JUnit4&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;단일 &lt;code class=&quot;language-text&quot;&gt;jar&lt;/code&gt; 파일로 제공&lt;/li&gt;
+&lt;li&gt;모놀리식 아키텍처&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;JUnit5&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;모듈화된 구조&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;JUnit Platform&lt;/code&gt;: 테스트 실행을 위한 기반&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;JUnit Jupiter&lt;/code&gt;: 새로운 테스트 API&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;JUnit Vintage&lt;/code&gt;: JUnit3, JUnit4 호환성 지원&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;2-어노테이션-변경&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-%EC%96%B4%EB%85%B8%ED%85%8C%EC%9D%B4%EC%85%98-%EB%B3%80%EA%B2%BD&quot; aria-label=&quot;2 어노테이션 변경 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;2. 어노테이션 변경&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;JUnit4&lt;/th&gt;
+&lt;th&gt;JUnit5&lt;/th&gt;
+&lt;th&gt;설명&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@Before&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@BeforeEach&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;각 테스트 메서드 전에 실행&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@After&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@AfterEach&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;각 테스트 메서드 후에 실행&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@BeforeClass&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@BeforeAll&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;클래스의 모든 테스트 전에 실행&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@AfterClass&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@AfterAll&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;클래스의 모든 테스트 후에 실행&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@Ignore&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@Disabled&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;테스트 비활성화&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;N/A&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;@DisplayName&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;테스트에 사용자 정의 이름 부여&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&quot;3-새로운-기능들&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-%EC%83%88%EB%A1%9C%EC%9A%B4-%EA%B8%B0%EB%8A%A5%EB%93%A4&quot; aria-label=&quot;3 새로운 기능들 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;3. 새로운 기능들&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;JUnit5&lt;/strong&gt;에서 추가된 주요 기능들:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;중첩 테스트&lt;/strong&gt;: &lt;code class=&quot;language-text&quot;&gt;@Nested&lt;/code&gt; 어노테이션&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;태그 필터링&lt;/strong&gt;: &lt;code class=&quot;language-text&quot;&gt;@Tag&lt;/code&gt; 어노테이션&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;파라미터화된 테스트 개선&lt;/strong&gt;: &lt;code class=&quot;language-text&quot;&gt;@ParameterizedTest&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;@ValueSource&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;@CsvSource&lt;/code&gt; 등&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;확장 모델&lt;/strong&gt;: &lt;code class=&quot;language-text&quot;&gt;@ExtendWith&lt;/code&gt; 사용&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;조건부 테스트 실행&lt;/strong&gt;: &lt;code class=&quot;language-text&quot;&gt;@EnabledOnOs&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;@EnabledIfSystemProperty&lt;/code&gt; 등&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;인터페이스 기본 메서드로 테스트 선언 지원&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// JUnit4 예시&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Category&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;SlowTests&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;class&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; void &lt;span class=&quot;token function&quot;&gt;myTest&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 테스트 코드&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// JUnit5 예시&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Tag&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;slow&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@DisplayName&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;샘플 테스트&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+void &lt;span class=&quot;token function&quot;&gt;myTest&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 테스트 코드&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;안드로이드에서의-JUnit4와-JUnit5&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C%EC%97%90%EC%84%9C%EC%9D%98-JUnit4%EC%99%80-JUnit5&quot; aria-label=&quot;안드로이드에서의 JUnit4와 JUnit5 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;안드로이드에서의 JUnit4와 JUnit5&lt;/h2&gt;
+&lt;p&gt;안드로이드 테스트 환경은 주로 &lt;code class=&quot;language-text&quot;&gt;JUnit4&lt;/code&gt;를 기반으로 구축되어 있습니다. 실제로 많은 사용해보셨을만한 아래의 안드로이드 테스팅 라이브러리들이 여전히 &lt;code class=&quot;language-text&quot;&gt;JUnit4&lt;/code&gt; 기반으로 동작합니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Espresso&lt;/strong&gt;: UI 테스트 프레임워크&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AndroidX Test&lt;/strong&gt;: 테스트 유틸리티 및 매처&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mockito&lt;/strong&gt;: 모의 객체 프레임워크&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PowerMock&lt;/strong&gt;: 정적 메서드 모킹&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hamcrest&lt;/strong&gt;: 선언적 매처&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;이러한 라이브러리들은 대부분 JUnit4의 &lt;code class=&quot;language-text&quot;&gt;@RunWith&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;@Rule&lt;/code&gt; 등을 기반으로 작동합니다.&lt;/p&gt;
+&lt;p&gt;최근에 회사에서 스크린샷 통합 테스트 구축 작업을 진행하다가, 기존의 테스트 코드들이 &lt;code class=&quot;language-text&quot;&gt;Junit5&lt;/code&gt; 기반으로 동작하고 있어서 JVM UI 테스트를 위해 &lt;a href=&quot;http://robolectric.org/&quot;&gt;Robolectric&lt;/a&gt;을 셋업하는 과정에서 여러 이슈가 있었습니다.&lt;/p&gt;
+&lt;h3 id=&quot;Robolectric&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Robolectric&quot; aria-label=&quot;Robolectric permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Robolectric&lt;/h3&gt;
+&lt;p&gt;간단하게 설명하자면, &lt;a href=&quot;http://robolectric.org/&quot;&gt;Robolectric&lt;/a&gt;은 안드로이드 UI 테스트를 JVM 에서 실행할 수 있게 해주는 강력한 도구입니다. 그러나 아쉽게도 &lt;code class=&quot;language-text&quot;&gt;Robolectric&lt;/code&gt;은 현재까지도 &lt;code class=&quot;language-text&quot;&gt;JUnit4&lt;/code&gt; 기반에서만 동작합니다.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/robolectric/robolectric/issues/3477&quot;&gt;https://github.com/robolectric/robolectric/issues/3477&lt;/a&gt; &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/2e36f3783fc9661c069d5f569d07ee50/af7a3/robolectric-junit5-support-issue.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 31.176470588235293%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAABYlAAAWJQFJUiTwAAABAElEQVR42n2QyW6DMBRFWUfMOCbg1AwBApipaYKKUqmrLvoX/f+fuLWdik1RFkc+z7au7GsU/Yj79xfG2wIxzuimGdflE3X/pv0yf2C63dEOVwyXd6SlAEsqOEEEywv/YdA+g/hZ4HEG06ZwSaSx/QM8Ekt/oAJsP9T7W0FrYNoKJOcaES9Bjzn2caZx90dYvgwJ4nV1CNOosy08icFlWFI1yM8DKvGKk1yLZtSz4lQPKNsJadUhLYQmKVqJAM8bWUGnPZPnIctg7CwC06H6YtlMyMpW+gOe13IWGuVBqF7BVlQV/p/7lOlaDPVvW0r4UiCWZZMDx84mm5gufYrq8BcSD59Q8jGb8AAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;Real JUnit 5 support (via extension API)&apos; title=&apos;&apos; src=&apos;/static/2e36f3783fc9661c069d5f569d07ee50/ca1dc/robolectric-junit5-support-issue.png&apos; srcset=&apos;/static/2e36f3783fc9661c069d5f569d07ee50/e7570/robolectric-junit5-support-issue.png 170w,
+/static/2e36f3783fc9661c069d5f569d07ee50/f46e7/robolectric-junit5-support-issue.png 340w,
+/static/2e36f3783fc9661c069d5f569d07ee50/ca1dc/robolectric-junit5-support-issue.png 680w,
+/static/2e36f3783fc9661c069d5f569d07ee50/02d09/robolectric-junit5-support-issue.png 1020w,
+/static/2e36f3783fc9661c069d5f569d07ee50/9d567/robolectric-junit5-support-issue.png 1360w,
+/static/2e36f3783fc9661c069d5f569d07ee50/af7a3/robolectric-junit5-support-issue.png 1706w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;Real JUnit 5 support (via extension API)&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;Robolectric&lt;/code&gt;의 핵심 기능은 JUnit4의 &lt;code class=&quot;language-text&quot;&gt;@RunWith&lt;/code&gt; 어노테이션을 사용하여 작동하고 있고, 아래의 예시처럼 사용할 수 있습니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// Robolectric 테스트 예시&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@RunWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;RobolectricTestRunner&lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; MyRobolectricTest &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;testButton_click&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;val&lt;/span&gt; activity &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Robolectric&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;setupActivity&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;MyActivity&lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;java&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;val&lt;/span&gt; button &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; activity&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;findViewById&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Button&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;R&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;id&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;my_button&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        button&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;performClick&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// 검증 로직&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;JUnit5를-안드로이드에-적용하기&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#JUnit5%EB%A5%BC-%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C%EC%97%90-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0&quot; aria-label=&quot;JUnit5를 안드로이드에 적용하기 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;JUnit5를 안드로이드에 적용하기&lt;/h2&gt;
+&lt;p&gt;Gradle 테스트를 위해 &lt;code class=&quot;language-text&quot;&gt;JUnit5&lt;/code&gt;를 사용하려면 &lt;code class=&quot;language-text&quot;&gt;useJUnitPlatform()&lt;/code&gt; 구성이 필요합니다.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/e9d30e3d8126fe29e50e15756fec4c41/9444d/use-junit-platform-description.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 25.294117647058822%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAtklEQVR42oWQSw7DIAxEc5EkfAx2Auki3VTq/c81HSCRumoXT8MY/GMKkhCzIqRGvlThJcOFBB8TVi9YljBYfzNFNWgtyIXUQfNp2xDNqDuE2hq04n8L9odtomsqL9oJybq6IJ3FhQGT5sVj/tI71guqKkp9YH++O+V8wY6zk6zCuQjHlW9Wek/1cXzJiDN2nafICzOuuR3IukN5bpryBqXm7vkFedwJJ1d62w/m1PGW2ymbixg+PUqOOyM0ZQQAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;use junit platform description&apos; title=&apos;&apos; src=&apos;/static/e9d30e3d8126fe29e50e15756fec4c41/ca1dc/use-junit-platform-description.png&apos; srcset=&apos;/static/e9d30e3d8126fe29e50e15756fec4c41/e7570/use-junit-platform-description.png 170w,
+/static/e9d30e3d8126fe29e50e15756fec4c41/f46e7/use-junit-platform-description.png 340w,
+/static/e9d30e3d8126fe29e50e15756fec4c41/ca1dc/use-junit-platform-description.png 680w,
+/static/e9d30e3d8126fe29e50e15756fec4c41/02d09/use-junit-platform-description.png 1020w,
+/static/e9d30e3d8126fe29e50e15756fec4c41/9d567/use-junit-platform-description.png 1360w,
+/static/e9d30e3d8126fe29e50e15756fec4c41/9444d/use-junit-platform-description.png 2098w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// build.gradle.kts&lt;/span&gt;
+tasks&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;withType&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Test&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;useJUnitPlatform&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+dependencies &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;testImplementation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;org.junit.jupiter:junit-jupiter-api:5.9.3&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;testRuntimeOnly&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;org.junit.jupiter:junit-jupiter-engine:5.9.3&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api&quot;&gt;https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api&lt;/a&gt;
+&lt;a href=&quot;https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine&quot;&gt;https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;그렇다면 &lt;code class=&quot;language-text&quot;&gt;JUnit5&lt;/code&gt;와 &lt;code class=&quot;language-text&quot;&gt;Robolectric&lt;/code&gt;을 함께 사용하려면 어떻게 해야할까요?&lt;/p&gt;
+&lt;p&gt;앞서 설명했던 &lt;code class=&quot;language-text&quot;&gt;JUnit Vintage&lt;/code&gt;를 사용하시면 됩니다.&lt;/p&gt;
+&lt;p&gt;&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/d0d1ea0f39674088060df57b2cf4fd8a/d76be/junit-vintage-description.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 43.529411764705884%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAABYlAAAWJQFJUiTwAAABtklEQVR42m1RCW7bMBDU/79ToEjaN6StY6QF0ljWQfE+dEaSZXm6ZNIABUpgsLPL5XCPbOk7LN5h6QKW1mNbV1yvO+H6gW3b/ovL5fLBb7cb4smccwjeI9o2BHjiEV3XUcwiBI9hGNCTP0bb9xjHMdmYM7zH4sdJMJBIfKS1TgnRt9Ymbn2bsO03UNGEG3aqZN/3fxDjl21PVWbnosS5KFBVFYQQ4JyjaZqEsjHIa43fBce5tngpJbiQqGoGxjiqskTJFJ4rBxMmEifBvDYQSiexhsQYCUkp34UZpOB0R4/pYV4pFEzjVGlUjaY8QXcKQioak3urkAkHpjpIO0DYHo3uU5vSdmB6gHQTDPmKPo3jkCagVi2E6WAszbwdsCwL5nlJ7WeKNzBa0UJoMdYg0CIib6QH1yRsehhjoS2J0ifadWipGmc0LanH6zRifh3JDthpMdnDs8ThpPGYOzyVnqzFUxHw/cXgEGOFx/FsCBbH3OBXFfCzdMSpdTnhrGfkasJJzRhmqvDTg8Hnbwp3B4evx4C7Hxb3jw735H85GDC/QLQreHjDX95QnPsVzM2JM7dgWnf8AY2Ypn5miDXLAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;https://junit.org/junit5/docs/current/user-guide/&apos; title=&apos;&apos; src=&apos;/static/d0d1ea0f39674088060df57b2cf4fd8a/ca1dc/junit-vintage-description.png&apos; srcset=&apos;/static/d0d1ea0f39674088060df57b2cf4fd8a/e7570/junit-vintage-description.png 170w,
+/static/d0d1ea0f39674088060df57b2cf4fd8a/f46e7/junit-vintage-description.png 340w,
+/static/d0d1ea0f39674088060df57b2cf4fd8a/ca1dc/junit-vintage-description.png 680w,
+/static/d0d1ea0f39674088060df57b2cf4fd8a/02d09/junit-vintage-description.png 1020w,
+/static/d0d1ea0f39674088060df57b2cf4fd8a/9d567/junit-vintage-description.png 1360w,
+/static/d0d1ea0f39674088060df57b2cf4fd8a/d76be/junit-vintage-description.png 2028w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;https://junit.org/junit5/docs/current/user-guide/&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;JUnit Vintage&lt;/code&gt;는 JUnit3와 JUnit4 기반의 테스트를 위해 테스트 엔진을 제공해줍니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// build.gradle.kts&lt;/span&gt;
+dependencies &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;testRuntimeOnly&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;org.junit.vintage:junit-vintage-engine:5.9.3&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine&quot;&gt;https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;이 방법으로 &lt;code class=&quot;language-text&quot;&gt;JUnit4 + Robolectric 테스트&lt;/code&gt;를 &lt;code class=&quot;language-text&quot;&gt;JUnit5&lt;/code&gt; 환경에서 실행할 수 있게 되었습니다.&lt;/p&gt;
+&lt;h2 id=&quot;결론&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EA%B2%B0%EB%A1%A0&quot; aria-label=&quot;결론 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;결론&lt;/h2&gt;
+&lt;p&gt;안드로이드 개발 생태계에서는 당분간 JUnit4, JUnit5 두 버전이 공존할 것으로 보입니다. &lt;code class=&quot;language-text&quot;&gt;Robolectric&lt;/code&gt;과 같은 중요한 도구들이 여전히 JUnit4에 의존하고 있기 때문에, 점진적 전환 접근 방식이 현실적일 것 같습니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;새로운 단위 테스트에 JUnit5 사용하기&lt;/li&gt;
+&lt;li&gt;UI 및 통합 테스트에는 JUnit4 + Robolectric 유지하기&lt;/li&gt;
+&lt;li&gt;JUnit Vintage를 통해 두 환경 통합하기&lt;/li&gt;
+&lt;li&gt;(중요) 커뮤니티의 진행 상황을 주시하며 점차적으로 전환 계획 세우기&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;참고&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%B0%B8%EA%B3%A0&quot; aria-label=&quot;참고 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;참고&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://junit.org/junit5/docs/5.1.0/release-notes/index.html#release-notes-5.0.0&quot;&gt;https://junit.org/junit5/docs/5.1.0/release-notes/index.html#release-notes-5.0.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/robolectric/robolectric/issues/3477&quot;&gt;https://github.com/robolectric/robolectric/issues/3477&lt;/a&gt; &lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://junit.org/junit5/docs/current/user-guide/&quot;&gt;https://junit.org/junit5/docs/current/user-guide/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/android/android-test/issues/409&quot;&gt;https://github.com/android/android-test/issues/409&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[안드로이드 개발자가 놓치기 쉬운 UX (feat. 피츠의 법칙)]]></title><description><![CDATA[안드로이드 앱을 개발하다 보면 UI는 완벽해 보여도(적어도 프로덕트 디자이너분들께서 요구하는 사항들을 전부 만족하더라도?), 사용자 경험(UX) 측면에서 사소하지만 치명적인 요소들을 간과하기 쉽습니다. 특히 피츠의 법칙(Fitts’ Law…]]></description><link>https://onseok.blog/fitts-law/</link><guid isPermaLink="false">https://onseok.blog/fitts-law/</guid><pubDate>Tue, 04 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;안드로이드 앱을 개발하다 보면 UI는 완벽해 보여도(적어도 프로덕트 디자이너분들께서 요구하는 사항들을 전부 만족하더라도?), 사용자 경험(UX) 측면에서 사소하지만 치명적인 요소들을 간과하기 쉽습니다. 특히 &lt;strong&gt;피츠의 법칙(Fitts’ Law)&lt;/strong&gt;을 이해하면 버튼 터치 영역, 제스처 동작 등에서 흔히 놓치는 UX 포인트를 개선할 수 있습니다. 이번 글에서는 피츠의 법칙 개념부터 시작해, 안드로이드 개발자가 챙겨야 할 UX 요소들과 실제 개선 방법을 살펴보겠습니다.&lt;/p&gt;
 &lt;h3 id=&quot;피츠의-법칙&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%ED%94%BC%EC%B8%A0%EC%9D%98-%EB%B2%95%EC%B9%99&quot; aria-label=&quot;피츠의 법칙 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;피츠의 법칙?&lt;/h3&gt;
 &lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 440px; margin-bottom: 16px;&apos;&gt;
       &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/7d82fa38a7f773161cc54d6394d5bcec/7c5f7/fitts_law.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
