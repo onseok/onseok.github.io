@@ -1,4 +1,615 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[RSS Feed of onseok.blog]]></title><description><![CDATA[배움을 배포하기]]></description><link>https://onseok.blog</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 09 Mar 2025 00:24:50 GMT</lastBuildDate><item><title><![CDATA[JUnit4 vs JUnit5 그리고 Robolectric 호환성 문제 해결하기]]></title><description><![CDATA[안드로이드 개발에서 테스팅은 애플리케이션의 품질을 보장하는 중요한 단계입니다. 특히 JUnit은 자바와 코틀린 환경에서 가장 널리 사용되는 테스팅 프레임워크이지만, JUnit4와 JUnit…]]></description><link>https://onseok.blog/junit4-junit5/</link><guid isPermaLink="false">https://onseok.blog/junit4-junit5/</guid><pubDate>Fri, 07 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;안드로이드 개발에서 테스팅은 애플리케이션의 품질을 보장하는 중요한 단계입니다. 특히 JUnit은 자바와 코틀린 환경에서 가장 널리 사용되는 테스팅 프레임워크이지만, JUnit4와 JUnit5 사이에는 상당한 차이가 있으며 이는 안드로이드 테스트 환경에서 여러 문제를 일으킬 수 있습니다. 이 글에서는 JUnit4와 JUnit5의 주요 차이점, Robolectric이 JUnit4만 지원하는 제약을 해결하는 방법에 대해 알아보겠습니다.&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[RSS Feed of onseok.blog]]></title><description><![CDATA[배움을 배포하기]]></description><link>https://onseok.blog</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 09 Mar 2025 15:17:45 GMT</lastBuildDate><item><title><![CDATA[Roborazzi로 안드로이드 스크린샷 변경점 시각화 테스트 구축하기]]></title><description><![CDATA[Roborazzi로 안드로이드 스크린샷 변경점 시각화 테스트 구축하기 안드로이드 앱 개발 시 UI…]]></description><link>https://onseok.blog/roborazzi/</link><guid isPermaLink="false">https://onseok.blog/roborazzi/</guid><pubDate>Sun, 09 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1 id=&quot;Roborazzi로-안드로이드-스크린샷-변경점-시각화-테스트-구축하기&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Roborazzi%EB%A1%9C-%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7-%EB%B3%80%EA%B2%BD%EC%A0%90-%EC%8B%9C%EA%B0%81%ED%99%94-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0&quot; aria-label=&quot;Roborazzi로 안드로이드 스크린샷 변경점 시각화 테스트 구축하기 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Roborazzi로 안드로이드 스크린샷 변경점 시각화 테스트 구축하기&lt;/h1&gt;
+&lt;p&gt;안드로이드 앱 개발 시 UI 변경사항이 제대로 적용되었는지 확인하는 과정은 필수적입니다. 특히 다양한 화면 크기와 해상도를 지원해야 하는 안드로이드 환경에서는 더욱 중요합니다. 하지만 코드 리뷰만으로는 이러한 UI 변경사항을 정확히 파악하기 어렵고, 특히 팀 규모가 커질수록 의도치 않은 UI 변경을 놓치기 쉽습니다.&lt;/p&gt;
+&lt;p&gt;최근 저는 회사 프로젝트에서 이 문제를 해결하기 위해 &lt;a href=&quot;https://github.com/takahirom/roborazzi&quot;&gt;Roborazzi&lt;/a&gt;를 활용한 스크린샷 테스트 시스템을 구축했습니다. 이 글에서는 &lt;code class=&quot;language-text&quot;&gt;Roborazzi&lt;/code&gt;의 적용부터, &lt;code class=&quot;language-text&quot;&gt;GitHub Actions&lt;/code&gt;를 활용한 CI 파이프라인 구축까지의 경험을 공유하려고 합니다.&lt;/p&gt;
+&lt;h2 id=&quot;Roborazzi-소개&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Roborazzi-%EC%86%8C%EA%B0%9C&quot; aria-label=&quot;Roborazzi 소개 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Roborazzi 소개&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/takahirom/roborazzi&quot;&gt;Roborazzi&lt;/a&gt;는 &lt;a href=&quot;https://robolectric.org/&quot;&gt;Robolectric&lt;/a&gt; 기반의 안드로이드 스크린샷 테스트 라이브러리입니다. Robolectric의 Native Graphics Mode(RNG)를 활용하여 JVM 환경에서 실행되는 안드로이드 통합 테스트를 시각화할 수 있게 해줍니다. 아직 Experimental 단계이지만, &lt;a href=&quot;https://github.com/takahirom/roborazzi?tab=readme-ov-file#experimental-feature-ios-support&quot;&gt;Compose Multiplatform iOS&lt;/a&gt;와 &lt;a href=&quot;https://github.com/takahirom/roborazzi?tab=readme-ov-file#experimental-feature-compose-desktop-support&quot;&gt;Compose Desktop&lt;/a&gt;도 실험적으로 지원하고 있습니다.&lt;/p&gt;
+&lt;p&gt;Roborazzi의 가장 큰 장점은 실제 기기 없이 JVM 환경에서 스크린샷을 생성하고 비교할 수 있어, CI 환경에서 빠르게 테스트를 실행할 수 있다는 점입니다. 또한 Google의 공식 샘플 프로젝트인 &lt;a href=&quot;https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt&quot;&gt;Now in Android&lt;/a&gt;에도 적용되어 있어 실제 프로덕션 수준의 구현 예시를 찾아볼 수 있습니다.&lt;/p&gt;
+&lt;h3 id=&quot;Paparazzi와-Roborazzi-비교&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Paparazzi%EC%99%80-Roborazzi-%EB%B9%84%EA%B5%90&quot; aria-label=&quot;Paparazzi와 Roborazzi 비교 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Paparazzi와 Roborazzi 비교&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/cashapp/paparazzi&quot;&gt;Paparazzi&lt;/a&gt;는 JVM 환경에서 디스플레이를 시각화하는 훌륭한 도구이지만, 안드로이드 프레임워크를 모킹하는 Robolectric과는 호환되지 않습니다. Roborazzi는 이 간극을 메워줍니다. Robolectric과 통합되어 Hilt 등의 의존성 주입을 활용한 테스트가 가능하며, 실제 컴포넌트와 상호작용할 수 있습니다. 본질적으로 Roborazzi는 Paparazzi의 기능을 확장하여 Robolectric으로 스크린샷을 캡처함으로써 더 효율적이고 신뢰할 수 있는 테스트 프로세스를 제공합니다.&lt;/p&gt;
+&lt;h3 id=&quot;주요-Gradle-태스크&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%A3%BC%EC%9A%94-Gradle-%ED%83%9C%EC%8A%A4%ED%81%AC&quot; aria-label=&quot;주요 Gradle 태스크 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;주요 Gradle 태스크&lt;/h3&gt;
+&lt;p&gt;Roborazzi는 다음과 같은 Gradle 태스크를 제공합니다:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;태스크명&lt;/th&gt;
+&lt;th&gt;설명&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;recordRoborazziDebug&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;스크린샷을 캡처하고 저장&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;compareRoborazziDebug&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;현재 이미지와 저장된 이미지를 비교&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;verifyRoborazziDebug&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;현재 이미지와 저장된 이미지 간의 차이 검증&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;verifyAndRecordRoborazziDebug&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;이미지 검증 후 차이가 있으면 새 기준 이미지 기록&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;clearRoborazziDebug&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;저장된 스크린샷 삭제 (실험적 기능)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&quot;프로젝트-설정&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%84%A4%EC%A0%95&quot; aria-label=&quot;프로젝트 설정 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;프로젝트 설정&lt;/h2&gt;
+&lt;h3 id=&quot;Gradle-설정&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Gradle-%EC%84%A4%EC%A0%95&quot; aria-label=&quot;Gradle 설정 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Gradle 설정&lt;/h3&gt;
+&lt;p&gt;먼저 프로젝트 레벨의 &lt;code class=&quot;language-text&quot;&gt;build.gradle.kts&lt;/code&gt;에 Roborazzi 플러그인을 추가합니다. &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// root build.gradle.kts&lt;/span&gt;
+plugins &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.github.takahirom.roborazzi&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; version &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;[version]&quot;&lt;/span&gt;&lt;/span&gt; apply &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;만약, buildScript 블록을 사용할 경우에는 아래와 같이 설정해줍니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// root build.gradle.kts&lt;/span&gt;
+buildscript &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  dependencies &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;classpath&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.github.takahirom.roborazzi:roborazzi-gradle-plugin:[version]&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;그리고 모듈 레벨의 &lt;code class=&quot;language-text&quot;&gt;build.gradle.kts&lt;/code&gt;에 다음과 같이 설정합니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// module build.gradle.kts&lt;/span&gt;
+plugins &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.github.takahirom.roborazzi&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+android &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 기존 설정&lt;/span&gt;
+    
+    testOptions &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        unitTests &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            isIncludeAndroidResources &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// Robolectric의 하드웨어 렌더링 모드 사용&lt;/span&gt;
+            all &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                it&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;systemProperties&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;robolectric.pixelCopyRenderMode&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;hardware&quot;&lt;/span&gt;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+dependencies &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// Core functions&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;testImplementation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.github.takahirom.roborazzi:roborazzi:[version]&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;// Jetpack Compose&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;testImplementation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.github.takahirom.roborazzi:roborazzi-compose:[version]&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;// JUnit rules&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;testImplementation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.github.takahirom.roborazzi:roborazzi-junit-rule:[version]&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// Roborazzi 설정&lt;/span&gt;
+roborazzi &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 레퍼런스 이미지 저장 경로 설정&lt;/span&gt;
+    outputDir&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;src/test/screenshots&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;// 비교 이미지 저장 경로 (Experimental option)&lt;/span&gt;
+    compare &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        outputDir&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;build/outputs/screenshots_comparison&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;gradleproperties-추가-설정&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#gradleproperties-%EC%B6%94%EA%B0%80-%EC%84%A4%EC%A0%95&quot; aria-label=&quot;gradleproperties 추가 설정 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;gradle.properties 추가 설정&lt;/h3&gt;
+&lt;p&gt;Roborazzi는 &lt;code class=&quot;language-text&quot;&gt;gradle.properties&lt;/code&gt; 파일에서 다양한 옵션을 설정할 수 있습니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;properties&quot;&gt;&lt;pre class=&quot;language-properties&quot;&gt;&lt;code class=&quot;language-properties&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# 스크린샷 테스트 활성화 옵션&lt;/span&gt;
+&lt;span class=&quot;token key attr-name&quot;&gt;roborazzi.test.record&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# roborazzi.test.compare=true&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# roborazzi.test.verify=true&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 이미지 리사이즈 스케일 설정&lt;/span&gt;
+&lt;span class=&quot;token key attr-name&quot;&gt;roborazzi.record.resizeScale&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;0.5&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 파일 경로 전략 설정&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# 기본값은 relativePathFromCurrentDirectory&lt;/span&gt;
+&lt;span class=&quot;token key attr-name&quot;&gt;roborazzi.record.filePathStrategy&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;relativePathFromRoborazziContextOutputDirectory&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 이미지 포맷 설정 (WebP 지원, Experimental)&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# roborazzi.record.image.extension=webp&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# 오래된 스크린샷 자동 정리 (주의 필요)&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# roborazzi.cleanupOldScreenshots=true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;스크린샷-테스트-작성&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%9E%91%EC%84%B1&quot; aria-label=&quot;스크린샷 테스트 작성 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;스크린샷 테스트 작성&lt;/h2&gt;
+&lt;p&gt;이제 실제 스크린샷 테스트를 작성해보겠습니다. &lt;code class=&quot;language-text&quot;&gt;Roborazzi&lt;/code&gt;는 다양한 방식의 스크린샷 캡처를 지원하며, 주요 API는 다음과 같습니다:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;캡처 대상&lt;/th&gt;
+&lt;th&gt;코드 예시&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Jetpack Compose&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;composeTestRule.onNodeWithTag(&quot;AddBoxButton&quot;).captureRoboImage()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Espresso View&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;onView(ViewMatchers.isRoot()).captureRoboImage()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;일반 View&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;view.captureRoboImage()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Compose 람다&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;captureRoboImage { Text(&quot;Hello Compose!&quot;) }&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;전체 화면 (Experimental)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;captureScreenRoboImage()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Bitmap&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;bitmap.captureRoboImage()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;다음은 Jetpack Compose 기반 로그인 화면의 스크린샷 테스트 예시입니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token annotation builtin&quot;&gt;@RunWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;RobolectricTestRunner&lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@GraphicsMode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;GraphicsMode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Mode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;NATIVE&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// Robolectric Native Graphics 모드 활성화 (필수)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; LoginScreenshotTest &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@get:Rule&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;val&lt;/span&gt; composeTestRule &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createComposeRule&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;captureLoginScreen_defaultState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// 컴포즈 UI 설정&lt;/span&gt;
+        composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;setContent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            MyAppTheme &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;token function&quot;&gt;LoginScreen&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                    uiState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; LoginUiState&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Default&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    onLoginClick &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    onEmailChanged &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    onPasswordChanged &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;token comment&quot;&gt;// 스크린샷 캡처&lt;/span&gt;
+        composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;onRoot&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;captureRoboImage&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                &lt;span class=&quot;token comment&quot;&gt;// 파일명 지정 (기본 출력 디렉토리에 저장됨)&lt;/span&gt;
+                &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;loginScreen_defaultState&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;token comment&quot;&gt;// 추가 옵션 설정&lt;/span&gt;
+                roborazziOptions &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;RoborazziOptions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                    &lt;span class=&quot;token comment&quot;&gt;// 이미지 리사이징&lt;/span&gt;
+                    recordOptions &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RoborazziOptions&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;RecordOptions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                        resizeScale &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0.75f&lt;/span&gt;
+                    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    &lt;span class=&quot;token comment&quot;&gt;// 비교 옵션&lt;/span&gt;
+                    compareOptions &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RoborazziOptions&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;CompareOptions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                        changeThreshold &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0.01f&lt;/span&gt;
+                    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;captureLoginScreen_errorState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;setContent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            MyAppTheme &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;token function&quot;&gt;LoginScreen&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                    uiState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; LoginUiState&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Invalid credentials&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    onLoginClick &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    onEmailChanged &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                    onPasswordChanged &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;token comment&quot;&gt;// 특정 컴포넌트만 캡처할 수도 있음&lt;/span&gt;
+        composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;onNodeWithTag&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;errorMessage&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;captureRoboImage&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;loginScreen_errorMessage&quot;&lt;/span&gt;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        
+        &lt;span class=&quot;token comment&quot;&gt;// 전체 화면 캡처&lt;/span&gt;
+        composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;onRoot&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;captureRoboImage&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;loginScreen_errorState&quot;&lt;/span&gt;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;RoborazziRule-활용&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#RoborazziRule-%ED%99%9C%EC%9A%A9&quot; aria-label=&quot;RoborazziRule 활용 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;RoborazziRule 활용&lt;/h3&gt;
+&lt;p&gt;Roborazzi는 JUnit 규칙을 통해 더 편리한 테스트 작성을 지원합니다. &lt;code class=&quot;language-text&quot;&gt;RoborazziRule&lt;/code&gt;은 선택적이지만, 다음과 같은 이점을 제공합니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;RoborazziOptions&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;outputDirectoryPath&lt;/code&gt; 등의 컨텍스트 제공&lt;/li&gt;
+&lt;li&gt;다양한 캡처 유형 설정 (LastImage, AllImage, Gif 등)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token annotation builtin&quot;&gt;@RunWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;RobolectricTestRunner&lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@GraphicsMode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;GraphicsMode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Mode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;NATIVE&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; RuleTest &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@get:Rule&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;val&lt;/span&gt; composeTestRule &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createComposeRule&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@get:Rule&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;val&lt;/span&gt; roborazziRule &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;RoborazziRule&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+        composeRule &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        captureRoot &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;onRoot&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        options &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RoborazziRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Options&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// 테스트 실패 시에만 이미지 캡처&lt;/span&gt;
+            captureType &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RoborazziRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;CaptureType&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Gif&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;onlyFail &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// 이미지 비교 옵션 설정&lt;/span&gt;
+            roborazziOptions &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;RoborazziOptions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                compareOptions &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RoborazziOptions&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;CompareOptions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                    &lt;span class=&quot;token comment&quot;&gt;// 안티앨리어싱 문제 해결을 위한 설정&lt;/span&gt;
+                    imageComparator &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;SimpleImageComparator&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+                        maxDistance &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0.007f&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                        vShift &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;token comment&quot;&gt;// 수직 이동 허용&lt;/span&gt;
+                        hShift &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;     &lt;span class=&quot;token comment&quot;&gt;// 수평 이동 허용&lt;/span&gt;
+                    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// RoborazziRule 무시 어노테이션&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// @RoborazziRule.Ignore&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;testWithRule&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        composeTestRule&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;setContent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            MyAppTheme &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;token comment&quot;&gt;// RoborazziRule이 테스트 실행 과정에서 자동으로 이미지 캡처&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;GIF-이미지-캡처&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#GIF-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%BA%A1%EC%B2%98&quot; aria-label=&quot;GIF 이미지 캡처 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;GIF 이미지 캡처&lt;/h3&gt;
+&lt;p&gt;Roborazzi는 애니메이션이나 사용자 상호작용을 보여주는 GIF 이미지 생성도 지원합니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;captureRoboGifSample&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;onView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ViewMatchers&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;isRoot&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;captureRoboGif&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;build/test.gif&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// 앱 실행&lt;/span&gt;
+            ActivityScenario&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;launch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;MainActivity&lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;java&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// 다음 페이지로 이동&lt;/span&gt;
+            &lt;span class=&quot;token function&quot;&gt;onView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;withId&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;R&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;id&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;button_first&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;perform&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;click&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// 뒤로 가기&lt;/span&gt;
+            &lt;span class=&quot;token function&quot;&gt;pressBack&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;// 다시 다음 페이지로 이동&lt;/span&gt;
+            &lt;span class=&quot;token function&quot;&gt;onView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;withId&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;R&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;id&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;button_first&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;perform&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;click&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;다양한-디바이스-설정-테스트&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EB%8B%A4%EC%96%91%ED%95%9C-%EB%94%94%EB%B0%94%EC%9D%B4%EC%8A%A4-%EC%84%A4%EC%A0%95-%ED%85%8C%EC%8A%A4%ED%8A%B8&quot; aria-label=&quot;다양한 디바이스 설정 테스트 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;다양한 디바이스 설정 테스트&lt;/h3&gt;
+&lt;p&gt;실제 사용 환경을 더 잘 반영하기 위해 다양한 디바이스 설정(화면 크기, 방향, 다크 모드 등)에서 스크린샷을 캡처하는 것이 좋습니다. Roborazzi는 &lt;code class=&quot;language-text&quot;&gt;RobolectricDeviceQualifiers&lt;/code&gt;를 통해 미리 정의된 디바이스 설정을 제공합니다:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 클래스 레벨에서 기본 디바이스 설정&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@RunWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;RobolectricTestRunner&lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@GraphicsMode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;GraphicsMode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Mode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;NATIVE&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Config&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;qualifiers &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RobolectricDeviceQualifiers&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Pixel5&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; DeviceSpecificScreenshotTest &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// 특정 테스트 메서드에만 다른 설정 적용&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Config&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;qualifiers &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RobolectricDeviceQualifiers&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;MediumTablet &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;+land&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;captureLoginScreen_landscapeTablet&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// 다크 모드 설정&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Config&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;qualifiers &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;+night&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;captureLoginScreen_darkMode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// 로케일 설정&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Test&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Config&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;qualifiers &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;+ja&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;token comment&quot;&gt;// 일본어 로케일&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;captureLoginScreen_japaneseLocale&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;운영체제별-렌더링-차이&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C%EB%B3%84-%EB%A0%8C%EB%8D%94%EB%A7%81-%EC%B0%A8%EC%9D%B4&quot; aria-label=&quot;운영체제별 렌더링 차이 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;운영체제별 렌더링 차이&lt;/h2&gt;
+&lt;p&gt;다만, Roborazzi를 사용하면서 몇 가지 주의할 점들이 있습니다.&lt;/p&gt;
+&lt;h3 id=&quot;1-OS별-렌더링-불일치-문제&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-OS%EB%B3%84-%EB%A0%8C%EB%8D%94%EB%A7%81-%EB%B6%88%EC%9D%BC%EC%B9%98-%EB%AC%B8%EC%A0%9C&quot; aria-label=&quot;1 OS별 렌더링 불일치 문제 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;1. OS별 렌더링 불일치 문제&lt;/h3&gt;
+&lt;p&gt;Roborazzi는 &lt;a href=&quot;https://skia.org/&quot;&gt;Skia&lt;/a&gt; 라이브러리를 사용하여 UI를 렌더링하는데, 이 렌더링 결과는 운영체제마다 약간씩 다를 수 있습니다. 이는 &lt;a href=&quot;https://github.com/takahirom/roborazzi?tab=readme-ov-file#q-why-do-my-screenshot-tests-fail-inconsistently-across-different-operating-systems-like-macos-ubuntu-and-windows&quot;&gt;FAQ - Why do my screenshot tests fail inconsistently across different operating systems like MacOS, Ubuntu, and Windows?&lt;/a&gt;에서도 언급된 노운 이슈입니다.&lt;/p&gt;
+&lt;p&gt;이 문제는 Now in Android 프로젝트에서도 &lt;a href=&quot;https://github.com/android/nowinandroid/issues/1242#issuecomment-2032962982&quot;&gt;논의된 바 있으며&lt;/a&gt;, 모든 환경에서 동일한 렌더링을 보장할 수 없다는 점이 확인되었습니다.  참고로 이러한 이유로 저의 로컬 PC(Mac)에서도 스크린샷 검증 태스크를 수행하면 실패하였습니다. 주요 원인은 다음과 같습니다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;각 OS의 그래픽 드라이버 구현 차이&lt;/li&gt;
+&lt;li&gt;폰트 렌더링 방식의 차이&lt;/li&gt;
+&lt;li&gt;안티앨리어싱 처리 방식의 차이&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;이 문제를 해결하기 위해 &lt;code class=&quot;language-text&quot;&gt;RoborazziOptions.CompareOptions&lt;/code&gt;의 옵션들을 변경해주어도 되겠지만, 저는 이렇게 조금씩 검증 조건을 완화해주다보면 스크린샷을 비교하는 의미가 없어진다는 생각이 들었습니다. 그래서 Roborazzi의 저자인 &lt;a href=&quot;https://github.com/takahirom&quot;&gt;takahirom&lt;/a&gt;님의 의견에 따라 일관성을 위해 기준 이미지 생성과 검증을 모두 동일한 CI 환경에서 수행하도록 구성하였습니다.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/6a5924b5e21b5f68f8d37a7c9a211ce5/be2fd/now-in-android-roborazzi-compare-options.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 32.35294117647059%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAAAsTAAALEwEAmpwYAAABQ0lEQVR42n1Rt04FMRB89QsXfHf25exLL94LiCcBBRIFoQFRIf6FitTxx8OeJaCjGO2O157ZXY987qFKO9TygCpbopNbFAPPV5DE4yCHpmmY6gwzUxD4vxhNDQeeX6Cujig2D+gOT5D9I8r+Hqw4B8vPwMoLmGGHsW5iojsYa5bCRLcVpgaBohIcXCfkrosC+c07ytsPyLtP5NdvCC9fkF29Ev9CfXwGYxyCOnbDDEEiKU9VbokQlp9BY2IQ5OTAoVsCi3WP9XaPZr5UiKIEedahkRu07R5td4I4bVA2S2RyjqwiyBbCT+DSuWF7P4KOIjldWO9O0a32Ko/jCpJ2Wlc7lOUGsu6Rlo2qFc0CrheD0bqcsMB4Zv7tkPGAOnRhuxF4kICT4zCGaXmweQxHpCpaTgSHRIY6p3EtemfyiBD8fso32zSkgc9WczgAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;now in android roborazzi compare options&apos; title=&apos;&apos; src=&apos;/static/6a5924b5e21b5f68f8d37a7c9a211ce5/ca1dc/now-in-android-roborazzi-compare-options.png&apos; srcset=&apos;/static/6a5924b5e21b5f68f8d37a7c9a211ce5/e7570/now-in-android-roborazzi-compare-options.png 170w,
+/static/6a5924b5e21b5f68f8d37a7c9a211ce5/f46e7/now-in-android-roborazzi-compare-options.png 340w,
+/static/6a5924b5e21b5f68f8d37a7c9a211ce5/ca1dc/now-in-android-roborazzi-compare-options.png 680w,
+/static/6a5924b5e21b5f68f8d37a7c9a211ce5/be2fd/now-in-android-roborazzi-compare-options.png 952w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;실제로 &lt;a href=&quot;https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt&quot;&gt;nowinandroid&lt;/a&gt;에서도 이미지 비교 옵션에 대해서는 타협하지 않은 점을 확인할 수 있습니다. &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;2-메모리-문제-해결&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0&quot; aria-label=&quot;2 메모리 문제 해결 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;2. 메모리 문제 해결&lt;/h3&gt;
+&lt;p&gt;복잡한 UI에서 많은 스크린샷 테스트를 실행할 경우 &lt;code class=&quot;language-text&quot;&gt;OutOfMemoryError&lt;/code&gt;가 발생할 수 있습니다. 이는 &lt;a href=&quot;https://github.com/takahirom/roborazzi/issues/272&quot;&gt;Issue #272&lt;/a&gt;에서도 논의된 문제로, 다음과 같이 &lt;code class=&quot;language-text&quot;&gt;maxHeapSize&lt;/code&gt;를 조정하여 해결할 수 있습니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// build.gradle.kts&lt;/span&gt;
+android &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    testOptions &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        unitTests&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;all&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            maxHeapSize &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;4096m&quot;&lt;/span&gt;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;3-깨진-이미지-문제-해결&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-%EA%B9%A8%EC%A7%84-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0&quot; aria-label=&quot;3 깨진 이미지 문제 해결 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;3. 깨진 이미지 문제 해결&lt;/h3&gt;
+&lt;p&gt;일부 경우에 Roborazzi로 캡처한 이미지가 깨져 보일 수 있습니다. 이는 주로 API 레벨이 너무 낮거나 Robolectric의 렌더링 모드 설정 문제일 수 있습니다. &lt;a href=&quot;https://github.com/takahirom/roborazzi/issues/255#issuecomment-1972838571&quot;&gt;Issue #255&lt;/a&gt;에서 논의된 것처럼, 다음과 같은 설정으로 해결할 수 있습니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 테스트 클래스에 적용&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@Config&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;sdk &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;35&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;token comment&quot;&gt;// 최신 API 레벨 사용&lt;/span&gt;
+&lt;span class=&quot;token annotation builtin&quot;&gt;@GraphicsMode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;GraphicsMode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Mode&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;NATIVE&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;token comment&quot;&gt;// Native Graphics 모드 필수&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// build.gradle.kts&lt;/span&gt;
+android &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    testOptions &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        unitTests&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;all&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            it&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;systemProperties&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;robolectric.pixelCopyRenderMode&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string-literal singleline&quot;&gt;&lt;span class=&quot;token string&quot;&gt;&quot;hardware&quot;&lt;/span&gt;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;이러한 설정을 통해 대부분의 렌더링 문제를 해결할 수 있었습니다.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;참고로 Robolectric 4.14 버전부터 Android V(SDK 35)를 지원합니다.
+&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/47f62cea7df9a0f17684f59f737e42f0/f766a/robolectric-4.1.4.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 28.235294117647058%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAAAsTAAALEwEAmpwYAAABBklEQVR42o2RS1OEMBCEc9aFBZLAAsubgICurKXlo/SwZZWe/P8/p52JsHr08NV0kkpPTyLeP7/wdvrA0+sJ8/0zjg8vcHwNx1PYePrfOH5oEf10RDscUJkJeXOFrDLwwgx+bCDjCjrOoXYZdFJARnv4OkG4aDeI7BlzNtx4LCKs1eWDIMFW53BlSgYpArr8Y5bCUzHpzBpv5Q5BmFrYnBFlO2BfGhTNgNKMpDtKOyKvO9TdBEUJLxyJS1edR/s74i+RRRgal2n6a1u78dZWfgY2ZF1QU17zqKsZp3GYpcGKqOhSTWacihOa4cbqZtlbmzE8TbmY8+cZat5PMw53j5hpnRYtvgF2259qX0IZJwAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;robolectric 4 1 4&apos; title=&apos;&apos; src=&apos;/static/47f62cea7df9a0f17684f59f737e42f0/ca1dc/robolectric-4.1.4.png&apos; srcset=&apos;/static/47f62cea7df9a0f17684f59f737e42f0/e7570/robolectric-4.1.4.png 170w,
+/static/47f62cea7df9a0f17684f59f737e42f0/f46e7/robolectric-4.1.4.png 340w,
+/static/47f62cea7df9a0f17684f59f737e42f0/ca1dc/robolectric-4.1.4.png 680w,
+/static/47f62cea7df9a0f17684f59f737e42f0/02d09/robolectric-4.1.4.png 1020w,
+/static/47f62cea7df9a0f17684f59f737e42f0/9d567/robolectric-4.1.4.png 1360w,
+/static/47f62cea7df9a0f17684f59f737e42f0/f766a/robolectric-4.1.4.png 1808w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;CI-파이프라인-구축&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#CI-%ED%8C%8C%EC%9D%B4%ED%94%84%EB%9D%BC%EC%9D%B8-%EA%B5%AC%EC%B6%95&quot; aria-label=&quot;CI 파이프라인 구축 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;CI 파이프라인 구축&lt;/h2&gt;
+&lt;p&gt;테스트를 작성한 후, 이를 CI 파이프라인에 통합하는 것이 중요합니다. 저는 GitHub Actions를 활용하여 PR이 생성될 때마다 스크린샷 테스트를 자동으로 실행하고, 변경사항이 있을 경우 시각적으로 표시하는 시스템을 구축했습니다.&lt;/p&gt;
+&lt;h3 id=&quot;GitHub-Actions-워크플로우-구성&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#GitHub-Actions-%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EA%B5%AC%EC%84%B1&quot; aria-label=&quot;GitHub Actions 워크플로우 구성 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;GitHub Actions 워크플로우 구성&lt;/h3&gt;
+&lt;p&gt;다음은 GitHub Actions를 사용한 워크플로우 설정 예시입니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yaml&quot;&gt;&lt;pre class=&quot;language-yaml&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Android Pull Request CI
+
+&lt;span class=&quot;token key atrule&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;pull_request&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;branches&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; main&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; develop &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;token key atrule&quot;&gt;jobs&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;verify-screenshots&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;runs-on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ubuntu&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;latest
+    
+    &lt;span class=&quot;token key atrule&quot;&gt;permissions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;checks&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; write
+      &lt;span class=&quot;token key atrule&quot;&gt;pull-requests&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; write
+      &lt;span class=&quot;token key atrule&quot;&gt;contents&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; write
+      
+    &lt;span class=&quot;token key atrule&quot;&gt;steps&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Checkout the code
+        &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; actions/checkout@v4
+        &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;fetch-depth&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+        
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Set up JDK
+        &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; actions/setup&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;java@v4
+        &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;distribution&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;temurin&apos;&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;java-version&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;17&apos;&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;gradle&apos;&lt;/span&gt;
+          
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Set up Android SDK
+        &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; android&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;actions/setup&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;android@v3
+        
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Grant execute permission for gradlew
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; chmod +x gradlew
+        
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Run ktlint
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ./gradlew ktlintCheck
+        
+      &lt;span class=&quot;token comment&quot;&gt;# 스크린샷 검증 단계&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Verify Roborazzi Screenshots
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; screenshotsverify
+        &lt;span class=&quot;token key atrule&quot;&gt;continue-on-error&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ./gradlew verifyRoborazziDebug
+        
+      &lt;span class=&quot;token comment&quot;&gt;# 검증 실패 시 새 스크린샷 생성&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Generate new screenshots if verification failed
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; screenshotsrecord
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.screenshotsverify.outcome == &apos;failure&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ./gradlew recordRoborazziDebug
+        
+      &lt;span class=&quot;token comment&quot;&gt;# 브랜치명에서 JIRA 티켓 추출 (회사 상황에 맞게 조정)&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Extract JIRA ticket
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; extract_ticket
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.screenshotsrecord.outcome == &apos;success&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token scalar string&quot;&gt;
+          BRANCH_NAME=$(echo ${{ github.head_ref }})
+          echo &quot;branch_name=$BRANCH_NAME&quot; &gt;&gt; $GITHUB_OUTPUT&lt;/span&gt;
+          
+          if &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; $BRANCH_NAME =~ (TICKET&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;0&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;+) &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;; then
+            TICKET=&quot;$&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;BASH_REMATCH&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&quot;
+            echo &quot;ticket=$TICKET&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+            &lt;span class=&quot;token key atrule&quot;&gt;echo &quot;Found JIRA ticket&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $TICKET&quot;
+          else
+            echo &quot;ticket=NO&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;TICKET&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+            echo &quot;No JIRA ticket found in branch name&quot;
+          fi
+          
+      &lt;span class=&quot;token comment&quot;&gt;# 새 스크린샷 커밋&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Push new screenshots if available
+        &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; stefanzweifel/git&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;auto&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;commit&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;action@v5
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.screenshotsrecord.outcome == &apos;success&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;file_pattern&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;**/*.png&apos;&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;disable_globbing&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;false&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;commit_message&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;${{ steps.extract_ticket.outputs.ticket != &apos;NO-TICKET&apos; &amp;amp;&amp;amp; format(&apos;{0} feat: 스크린샷 업데이트&apos;, steps.extract_ticket.outputs.ticket) || &apos;NO-TICKET feat: 스크린샷 업데이트&apos; }}&quot;&lt;/span&gt;
+          
+      &lt;span class=&quot;token comment&quot;&gt;# 비교 이미지 수집&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Copy screenshot comparison files
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; copy_screenshots
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.screenshotsverify.outcome == &apos;failure&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token scalar string&quot;&gt;
+          mkdir -p /tmp/screenshot-diff&lt;/span&gt;
+          
+          cd $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; github.workspace &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+          find . &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;name &quot;&lt;span class=&quot;token important&quot;&gt;*_compare.png&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;exec cp &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; /tmp/screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff/ \;
+          
+          if &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;z &quot;$(find /tmp/screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;type f &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;name &apos;&lt;span class=&quot;token important&quot;&gt;*.png&apos;)&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;; then
+            echo &quot;No screenshot files found&quot;
+            echo &quot;has_images=false&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+          else
+            echo &quot;Found screenshot comparison images&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&quot;
+            ls &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;la /tmp/screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff
+            echo &quot;has_images=true&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+          fi
+          
+      &lt;span class=&quot;token comment&quot;&gt;# Companion Branch 생성&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Create companion branch for screenshot comparison
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; companion_branch
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.copy_screenshots.outputs.has_images == &apos;true&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token scalar string&quot;&gt;
+          BRANCH_NAME=&quot;screenshot-compare-${{ github.event.pull_request.number }}&quot;
+          echo &quot;branch_name=$BRANCH_NAME&quot; &gt;&gt; $GITHUB_OUTPUT&lt;/span&gt;
+          
+          git config &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;global user.name &quot;GitHub Actions&quot;
+          git config &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;global user.email &quot;actions@github.com&quot;
+          
+          git stash &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;u &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt; true
+          
+          git branch &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;D &quot;$BRANCH_NAME&quot; &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt; true
+          git checkout &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;orphan &quot;$BRANCH_NAME&quot;
+          git rm &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;rf .
+          
+          mkdir &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;p screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff
+          
+          cp /tmp/screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff/&lt;span class=&quot;token important&quot;&gt;*.png&lt;/span&gt; screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff/
+          
+          git add screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff
+          git commit &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;m &quot;Add screenshot comparison results&quot;
+          git push origin &quot;$BRANCH_NAME&quot; &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;f
+          
+          echo &quot;companion_push_success=echo &quot;companion_push_success=true&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+
+          git checkout &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;f $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; github.head_ref &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt; git checkout &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;f HEAD
+          
+      &lt;span class=&quot;token comment&quot;&gt;# 마크다운 리포트 생성&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Generate markdown report for screenshot diffs
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; generate_report
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.companion_branch.outputs.companion_push_success == &apos;true&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;token scalar string&quot;&gt;
+          REPORT=&quot;## 📸 스크린샷 비교 결과\n\n&quot;
+          REPORT+=&quot;| 화면 이름 | 비교 이미지 |\n&quot;
+          REPORT+=&quot;|:--------:|:----------:|\n&quot;&lt;/span&gt;
+          
+          BRANCH_NAME=&quot;$&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; steps.companion_branch.outputs.branch_name &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&quot;
+          
+          for FILE in /tmp/screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff/&lt;span class=&quot;token important&quot;&gt;*.png;&lt;/span&gt; do
+            FILENAME=$(basename &quot;$FILE&quot;)
+            SCREENNAME=$&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;FILENAME%_compare.png&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+          
+            IMG_URL=&quot;https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//github.com/$&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; github.repository &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;/blob/$BRANCH_NAME/screenshot&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;diff/$FILENAME&lt;span class=&quot;token punctuation&quot;&gt;?&lt;/span&gt;raw=true&quot;
+          
+            REPORT+=&quot;&lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt; \`$SCREENNAME\` &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token tag&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;Screenshot&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;($IMG_URL) &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt;\n&quot;
+          done
+          
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none &lt;span class=&quot;token punctuation&quot;&gt;|&lt;/span&gt; base64)
+          echo &quot;report&amp;lt;&amp;lt;$EOF&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+          echo &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;e &quot;$REPORT&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+          echo &quot;$EOF&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+          
+          echo &quot;found_images=true&quot; &lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt; $GITHUB_OUTPUT
+          
+      &lt;span class=&quot;token comment&quot;&gt;# 기존 PR 코멘트 찾기&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Find existing comment
+        &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; peter&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;evans/find&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;comment@v3
+        &lt;span class=&quot;token key atrule&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; find_comment
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.generate_report.outputs.found_images == &apos;true&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;issue-number&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; github.event.pull_request.number &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;comment-author&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;github-actions[bot]&apos;&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;body-includes&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;## 📸 스크린샷 비교 결과&apos;&lt;/span&gt;
+          
+      &lt;span class=&quot;token comment&quot;&gt;# PR 코멘트 생성 또는 업데이트&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Create or update comment with comparison results
+        &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; peter&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;evans/create&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;or&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;update&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;comment@v4
+        &lt;span class=&quot;token key atrule&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; steps.generate_report.outputs.found_images == &apos;true&apos;
+        &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;comment-id&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; steps.find_comment.outputs.comment&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;id &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;issue-number&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; github.event.pull_request.number &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; steps.generate_report.outputs.report &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;edit-mode&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; replace
+          
+      &lt;span class=&quot;token comment&quot;&gt;# 단위 테스트 실행&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Run unit tests
+        &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ./gradlew testDebugUnitTest &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;stacktrace&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;위 과정에 성공하면 다음과 같이 정상적으로 코멘트가 생성되는 것을 확인할 수 있습니다.
+&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/9ae60c4bda5d7505e098d4adbed5ef27/c807c/github-pr-comment-sample.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 71.76470588235294%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAABYlAAAWJQFJUiTwAAAC2UlEQVR42oWTW0hUURSGD2rjOHOcOZc5c2bO3M4Mc3G0cRwdAyshKAItoknsQkQF9RCBCAUFgQRSWJr1EHirnkQSDCJIfPDN3nroMtmDhreKNAuhR334W/uMYw0Vbfg5a6+99rfXXnsdLl5VjXgihXBlChGSR49BC0S35PSE4HDr/5WiBSG7AuBk1QPNFwQDp3bsRk39LiTTOw07mW6AoGiwO9x/SJDdEEUVIvs6PYYEhwbOalfACwpE2sicElskOxitgjcYBS86YZNdBbJLTpgpzhbbDhMlVGzisa3MDpukgiunDXYWSBMGttodhhhUoEyYzfwsjmXlJFAp6YyoYMzCozsWx/mLbTh99hxc3mAhkMnIlF2TfAyYn+fXVbI5lw8DVhvAcfhcn8bzyUmMPh5FIBTLAdk1ueIyXKCTFpc+4s3bLN5NvzeUzU5jdvYDDmVaUVTKQyMYA/ZtAueSSYyMPcHgwAB8euQ3YJEZbe2Xsba2hrm5eSwuLmGBaX4By8srONJ6AkUm6xawn88BvzU2YnpmBi+mphCMVOaANomuTF9WL4tN/qt4WmMxquImoBeDm8D1piaw8X11FZGKxK8aik4vtYP2TwmKx4hR3X5Y3AG0yCp6Si3oSNTg6vVOtF+6As0fZkCFgPR6vggEZwBWUQMveQrEfKKqQ/VH4aNmtwTj6BUcWKcMXyaqcbevD123uuEPVeSA7DUll450wx5kWk/iwOGjOJg5lhPZzJeobTBiAvQnmUNxPLBLxpU/1dXh2cQERkZGoIcr84/ihYl3oH/okVGPjY0N5EfevtbRiRKLjBDBzJTh0CZwqbYWT8fHMTw8/Ato9JnDi5bjp3Dn3n103ryNG109hpjdS779zRmUU4yuVxgZPhTk3KM0NxsHrq58Rawqla+hC6ovDKukodgiocQqF4j52IEq1dnnj6CMMuyRFPxgfbh3Hxa+rODV6ywi8SR+AvKu4f6frOyxAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;(화면이름은 보안상 흰색박스로 가렸습니다.)&apos; title=&apos;&apos; src=&apos;/static/9ae60c4bda5d7505e098d4adbed5ef27/ca1dc/github-pr-comment-sample.png&apos; srcset=&apos;/static/9ae60c4bda5d7505e098d4adbed5ef27/e7570/github-pr-comment-sample.png 170w,
+/static/9ae60c4bda5d7505e098d4adbed5ef27/f46e7/github-pr-comment-sample.png 340w,
+/static/9ae60c4bda5d7505e098d4adbed5ef27/ca1dc/github-pr-comment-sample.png 680w,
+/static/9ae60c4bda5d7505e098d4adbed5ef27/02d09/github-pr-comment-sample.png 1020w,
+/static/9ae60c4bda5d7505e098d4adbed5ef27/9d567/github-pr-comment-sample.png 1360w,
+/static/9ae60c4bda5d7505e098d4adbed5ef27/c807c/github-pr-comment-sample.png 1850w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;(화면이름은 보안상 흰색박스로 가렸습니다.)&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;이 워크플로우는 다음과 같은 순서로 동작합니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;PR이 생성되면 스크린샷 검증 작업(&lt;code class=&quot;language-text&quot;&gt;verifyRoborazziDebug&lt;/code&gt;)을 실행합니다.&lt;/li&gt;
+&lt;li&gt;검증에 실패하면(UI 변경이 있으면) 새로운 스크린샷을 생성합니다(&lt;code class=&quot;language-text&quot;&gt;recordRoborazziDebug&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;브랜치 이름에서 JIRA 티켓 번호를 추출하여 커밋 메시지에 포함합니다. 이 부분은 각 회사나 팀의 작업 방식에 맞게 조정할 수 있습니다. (예를 들어, JIRA 대신 GitLab 이슈 번호나 다른 형식의 작업 ID를 사용할 수 있을 것 같습니다.)&lt;/li&gt;
+&lt;li&gt;스크린샷 비교 이미지를 별도의 임시 브랜치(companion branch)에 저장합니다.&lt;/li&gt;
+&lt;li&gt;비교 이미지를 포함한 마크다운 보고서를 생성하여 PR 코멘트로 추가합니다.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;Companion-Branch-접근법&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Companion-Branch-%EC%A0%91%EA%B7%BC%EB%B2%95&quot; aria-label=&quot;Companion Branch 접근법 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Companion Branch 접근법&lt;/h3&gt;
+&lt;p&gt;문득 이런 생각이 들 수도 있습니다. 스크린샷의 이미지가 과도하게 많아지면 저장소의 용량도 계속해서 증가하는 것은 아닐까?
+그래서 &lt;code class=&quot;language-text&quot;&gt;Companion Branch Approach&lt;/code&gt;가 &lt;a href=&quot;https://github.com/DroidKaigi/conference-app-2022/pull/616&quot;&gt;DroidKaigi/conference-app-2022&lt;/a&gt;에서 제안되었습니다.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/a615bc58211cd02b65ae2b097b60ca5e/3643c/companion-branch-approach.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 71.17647058823529%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAIAAACgpqunAAAACXBIWXMAAAsTAAALEwEAmpwYAAACDUlEQVR42l1SWY6cMBTs+58m/zlBRvMxa6+ADXjfsLGhIaMsxfQoUloyCBvXq6r3aieMr1pedbxqRd2LumWUqzgt47zE6RrLPOQ5lquLWdqg3HDb3tYOzzBOPk1lXoyPVadbboT2lFsXp1TWtBVaTUh1J1ph7sGxLHleGlc6H73jJ8beCPGm8b4bE9dO98oBb2PBZdT6nzlfl2X9XseHZv8xK6MuXJzKPMUcxxIJV7Q95akonyDwH/ILjGJ2GJnUb4dTzb3pSQnVEJn3PeraODtLx5IlwON0z5zK1afCTVSKCqPrujbWpVxoV9kQyvI7j6JMGXZh+B6MBWZYkqq1MTaEbnjBe9kqa02cmWg0ZOigfLyXjWbgVNjwfCKt8k50RgrF2gMRTDsM6b3qOuk6abkO92DCFObcCo1hSJfOTVvVjeqpieXY9EgBLuTrT3uTvTX4a/gbOGxzLmDAt/bx0kvKJSEEDbhQhl+4gF/SxTDOkIlCeMP8DknCJn8eYd9J83q8PL4en4/10/78fm5Q9JYTgOEO/AildIMJ484OCaFTLoKzl+ZCethjTJCqotI0TB4JOpVCnpgJL4fqcKGUa8oUN37HtSdMghCRRvoQpnX9eOjCtx97RMSN07kVwg4gREgen/ZPr6f11x8IwdqNEwSvn062lea1TNc3Nb5wm/IWCTgaP2W7WG76/8X7L6/fBteLElXvAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;companion branch approach&apos; title=&apos;&apos; src=&apos;/static/a615bc58211cd02b65ae2b097b60ca5e/ca1dc/companion-branch-approach.png&apos; srcset=&apos;/static/a615bc58211cd02b65ae2b097b60ca5e/e7570/companion-branch-approach.png 170w,
+/static/a615bc58211cd02b65ae2b097b60ca5e/f46e7/companion-branch-approach.png 340w,
+/static/a615bc58211cd02b65ae2b097b60ca5e/ca1dc/companion-branch-approach.png 680w,
+/static/a615bc58211cd02b65ae2b097b60ca5e/02d09/companion-branch-approach.png 1020w,
+/static/a615bc58211cd02b65ae2b097b60ca5e/9d567/companion-branch-approach.png 1360w,
+/static/a615bc58211cd02b65ae2b097b60ca5e/3643c/companion-branch-approach.png 1400w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;제가 작성한 워크플로우는 비교 이미지들은 메인 코드베이스의 저장소 크기가 커지는 것을 방지하기 위해 임시 브랜치에 저장되어 관리되도록 하였지만, 레퍼런스 이미지들은 저장소에 커밋하고 있습니다. 첨부한 사진처럼 레퍼런스 이미지들도 GitHub Actions Artifact에 업로드하여 이를 &lt;code class=&quot;language-text&quot;&gt;companion branch&lt;/code&gt;에 생성한 비교이미지와 검증 태스크를 수행하는 방법으로 조금 더 개선할 수 있을 것 같습니다. 또한 Github Actions Artifact의 기본 보관 기간은 90일이지만, 보통 PR 생성 후 리뷰, 머지되기까지 길어봐야 1달 이내에 완료된다고 예상하면 보존 기간을 아래와 같이 30일로 설정할 수도 있습니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yaml&quot;&gt;&lt;pre class=&quot;language-yaml&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Store reference images as artifacts
+  &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; actions/upload&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;artifact@v4
+  &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; reference&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;screenshots
+    &lt;span class=&quot;token key atrule&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; src/test/screenshots
+    &lt;span class=&quot;token key atrule&quot;&gt;retention-days&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;30&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/actions/upload-artifact?tab=readme-ov-file#retention-period&quot;&gt;https://github.com/actions/upload-artifact?tab=readme-ov-file#retention-period&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;결론&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EA%B2%B0%EB%A1%A0&quot; aria-label=&quot;결론 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;결론&lt;/h2&gt;
+&lt;p&gt;Roborazzi를 활용한 스크린샷 테스트는 안드로이드 앱의 UI 품질을 높이는 데 큰 도움될 수 있습니다. 특히 CI 파이프라인과 통합하여 자동화된 UI 검증 시스템을 구축하면, 의도치 않은 UI 변경을 사전에 감지하고 시각적으로 확인할 수 있게 되어 좋았던 것 같습니다.
+참고로 해당 포스팅에서 Roborazzi의 모든 기능들을 전부 다룬 것은 아닙니다. &lt;a href=&quot;https://github.com/takahirom/roborazzi/releases&quot;&gt;릴리즈&lt;/a&gt;가 될때마다 신규 기능 추가 및 변경사항들을 꾸준히 모니터링하는 것이 중요할 것 같습니다.&lt;/p&gt;
+&lt;h2 id=&quot;참고-자료&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%B0%B8%EA%B3%A0-%EC%9E%90%EB%A3%8C&quot; aria-label=&quot;참고 자료 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;참고 자료&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/takahirom/roborazzi&quot;&gt;https://github.com/takahirom/roborazzi&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt&quot;&gt;https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/android/nowinandroid/issues/1242#issuecomment-2032962982&quot;&gt;https://github.com/android/nowinandroid/issues/1242#issuecomment-2032962982&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/DroidKaigi/conference-app-2022/pull/616&quot;&gt;https://github.com/DroidKaigi/conference-app-2022/pull/616&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/takahirom/roborazzi-compare-on-github-comment-sample&quot;&gt;https://github.com/takahirom/roborazzi-compare-on-github-comment-sample&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://robolectric.org/configuring/&quot;&gt;https://robolectric.org/configuring/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[JUnit4 vs JUnit5 그리고 Robolectric 호환성 문제 해결하기]]></title><description><![CDATA[안드로이드 개발에서 테스팅은 애플리케이션의 품질을 보장하는 중요한 단계입니다. 특히 JUnit은 자바와 코틀린 환경에서 가장 널리 사용되는 테스팅 프레임워크이지만, JUnit4와 JUnit…]]></description><link>https://onseok.blog/junit4-junit5/</link><guid isPermaLink="false">https://onseok.blog/junit4-junit5/</guid><pubDate>Fri, 07 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;안드로이드 개발에서 테스팅은 애플리케이션의 품질을 보장하는 중요한 단계입니다. 특히 JUnit은 자바와 코틀린 환경에서 가장 널리 사용되는 테스팅 프레임워크이지만, JUnit4와 JUnit5 사이에는 상당한 차이가 있으며 이는 안드로이드 테스트 환경에서 여러 문제를 일으킬 수 있습니다. 이 글에서는 JUnit4와 JUnit5의 주요 차이점, Robolectric이 JUnit4만 지원하는 제약을 해결하는 방법에 대해 알아보겠습니다.&lt;/p&gt;
 &lt;h2 id=&quot;JUnit4-vs-JUnit5&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#JUnit4-vs-JUnit5&quot; aria-label=&quot;JUnit4 vs JUnit5 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;JUnit4 vs JUnit5&lt;/h2&gt;
 &lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
       &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/1c26ab8af3ae58d148c3a3af21258636/f759a/junit5-release.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
