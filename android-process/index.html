@@ -342,10 +342,10 @@ data-styled.g43[id="Footer__CommentWrapper-sc-zqxmks-7"]{content:"cRSPGb,"}/*!sc
         <span class="token punctuation">}</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
         <span class="token comment">// onReceive() 반환 후 프로세스가 종료될 수 있음</span>
     <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-    <span class="token comment">// 올바른 구현</span>
-    <span class="token keyword">class</span> MyReceiver <span class="token operator">:</span> <span class="token function">BroadcastReceiver</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token comment">// 올바른 구현</span>
+<span class="token keyword">class</span> MyReceiver <span class="token operator">:</span> <span class="token function">BroadcastReceiver</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">override</span> <span class="token keyword">fun</span> <span class="token function">onReceive</span><span class="token punctuation">(</span>context<span class="token operator">:</span> Context<span class="token punctuation">,</span> intent<span class="token operator">:</span> Intent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">val</span> scheduler <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getSystemService</span><span class="token punctuation">(</span>JobScheduler<span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">.</span>java<span class="token punctuation">)</span>
         <span class="token keyword">val</span> jobInfo <span class="token operator">=</span> JobInfo<span class="token punctuation">.</span><span class="token function">Builder</span><span class="token punctuation">(</span>JOB_ID<span class="token punctuation">,</span> 
@@ -353,7 +353,7 @@ data-styled.g43[id="Footer__CommentWrapper-sc-zqxmks-7"]{content:"cRSPGb,"}/*!sc
             <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
         scheduler<span class="token punctuation">.</span><span class="token function">schedule</span><span class="token punctuation">(</span>jobInfo<span class="token punctuation">)</span>
     <span class="token punctuation">}</span>
-
+    
     <span class="token keyword">companion</span> <span class="token keyword">object</span> <span class="token punctuation">{</span>
         <span class="token keyword">private</span> <span class="token keyword">const</span> <span class="token keyword">val</span> JOB_ID <span class="token operator">=</span> <span class="token number">1000</span>
     <span class="token punctuation">}</span>
