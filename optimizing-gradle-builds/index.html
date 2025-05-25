@@ -633,29 +633,29 @@ tasks<span class="token punctuation">.</span><span class="token function">regist
 <p>이 스크립트는 서브프로젝트당 1초씩 걸려서 총 3초의 구성 단계 지연을 만듭니다.</p>
 <p>이를 최적화하려면,</p>
 <ul>
-<li>
-<p>하나의 서브프로젝트에서만 스크립트가 필요하다면, 다른 곳에서는 제거해서 구성 지연을 2초 줄일 수 있습니다.</p>
-<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy"><span class="token function">project</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">":subproject1"</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-apply from<span class="token punctuation">:</span> <span class="token interpolation-string"><span class="token string">"</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$</span><span class="token expression">rootDir</span></span><span class="token string">/script-a.gradle"</span></span>  <span class="token comment">// ✅ 필요한 곳에만 적용</span>
-<span class="token punctuation">}</span></code></pre></div>
-</li>
+<li>하나의 서브프로젝트에서만 스크립트가 필요하다면, 다른 곳에서는 제거해서 구성 지연을 2초 줄일 수 있습니다.</li>
 </ul>
-<p>project(":subproject2") {
-apply from: "$rootDir/script-a.gradle"
-}</p>
-<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">- 여러 서브프로젝트에서 스크립트를 사용하지만 전부는 아니라면, 이를 `buildSrc` 내부의 커스텀 플러그인으로 리팩토링하고 관련 서브프로젝트에만 적용할 수 있습니다. 이렇게 하면 구성 시간이 줄어들고 코드 중복도 피할 수 있습니다.
-```groovy
-plugins {
-    id 'com.example.my-custom-plugin' apply false  // ✅ 플러그인을 선언하되 전역 적용하지 않음
-}
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy"><span class="token function">project</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">":subproject1"</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    apply from<span class="token punctuation">:</span> <span class="token interpolation-string"><span class="token string">"</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$</span><span class="token expression">rootDir</span></span><span class="token string">/script-a.gradle"</span></span>  <span class="token comment">// ✅ 필요한 곳에만 적용</span>
+<span class="token punctuation">}</span>
 
-project(":subproject1") {
-    apply plugin: 'com.example.my-custom-plugin'  // ✅ 필요한 곳에만 적용
-}
+<span class="token function">project</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">":subproject2"</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    apply from<span class="token punctuation">:</span> <span class="token interpolation-string"><span class="token string">"</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$</span><span class="token expression">rootDir</span></span><span class="token string">/script-a.gradle"</span></span>
+<span class="token punctuation">}</span></code></pre></div>
+<ul>
+<li>여러 서브프로젝트에서 스크립트를 사용하지만 전부는 아니라면, 이를 <code class="language-text">buildSrc</code> 내부의 커스텀 플러그인으로 리팩토링하고 관련 서브프로젝트에만 적용할 수 있습니다. 이렇게 하면 구성 시간이 줄어들고 코드 중복도 피할 수 있습니다.</li>
+</ul>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy">plugins <span class="token punctuation">{</span>
+    id <span class="token string">'com.example.my-custom-plugin'</span> apply <span class="token boolean">false</span>  <span class="token comment">// ✅ 플러그인을 선언하되 전역 적용하지 않음</span>
+<span class="token punctuation">}</span>
 
-project(":subproject2") {
-    apply plugin: 'com.example.my-custom-plugin'
-}</code></pre></div>
+<span class="token function">project</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">":subproject1"</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    apply plugin<span class="token punctuation">:</span> <span class="token string">'com.example.my-custom-plugin'</span>  <span class="token comment">// ✅ 필요한 곳에만 적용</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">project</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">":subproject2"</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    apply plugin<span class="token punctuation">:</span> <span class="token string">'com.example.my-custom-plugin'</span>
+<span class="token punctuation">}</span></code></pre></div>
 <blockquote>
 <p>이 부분에서 apply false가 핵심입니다. 플러그인을 선언만 하고 바로 적용하지는 않겠다는 의미이기 때문입니다. 그러면 각 서브프로젝트에서 필요할 때만 선택적으로 적용할 수 있습니다. 특히 Android 프로젝트에서 이런 패턴을 자주 쓰는데, 모든 모듈이 Android framework가 필요한 것은 아니기 때문입니다.</p>
 </blockquote>
