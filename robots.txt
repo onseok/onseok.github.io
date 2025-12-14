@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://onseok.blog/sitemap.xml
-Host: https://onseok.blog
+Sitemap: https://onseok.github.io/sitemap.xml
+Host: https://onseok.github.io
