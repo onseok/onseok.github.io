@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ll-Hls on onseok</title><link>https://onseok.github.io/tags/ll-hls/</link><description>Recent content in Ll-Hls on onseok</description><generator>Hugo</generator><language>en-us</language><copyright>© {year} onseok</copyright><lastBuildDate>Sun, 06 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://onseok.github.io/tags/ll-hls/index.xml" rel="self" type="application/rss+xml"/><item><title>A Comprehensive Look at LL-HLS</title><link>https://onseok.github.io/posts/ll-hls-comprehensive-analysis/</link><pubDate>Sun, 06 Jul 2025 00:00:00 +0000</pubDate><guid>https://onseok.github.io/posts/ll-hls-comprehensive-analysis/</guid><description>&lt;h2 id="why-do-we-need-ll-hls"&gt;Why Do We Need LL-HLS?&lt;/h2&gt;
+&lt;p&gt;Have you ever had experiences like these while watching a live stream?&lt;/p&gt;
+&lt;p&gt;&lt;img src="faker.png" alt=""&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Watching an LCK match live on YouTube and seeing &amp;ldquo;GG&amp;rdquo; flood the chat before the Nexus explosion even appears on your screen&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Or watching the World Cup while your friend on cable TV texts you &amp;ldquo;GOAL!!!&amp;rdquo; before you even see it&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As Roger Pantos (Apple) &lt;a href="https://developer.apple.com/kr/videos/play/wwdc2019/502/"&gt;presented at WWDC2019&lt;/a&gt;, &amp;ldquo;when watching sports, you often hear the goal through your apartment wall before seeing it on your Apple TV&amp;rdquo; &amp;ndash; this is exactly the problem.&lt;/p&gt;</description></item></channel></rss>

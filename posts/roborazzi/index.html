@@ -1,0 +1,425 @@
+<!doctype html><html lang=en-us><head><meta http-equiv=X-Clacks-Overhead content="GNU Terry Pratchett"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel="shortcut icon" href=https://onseok.github.io/favicon.png><title>Building Visual Screenshot Change Detection Tests for Android with Roborazzi | onseok</title><meta name=title content="Building Visual Screenshot Change Detection Tests for Android with Roborazzi"><meta name=description content="Learn how to visualize UI changes in Android apps through screenshot testing and build an automated CI pipeline with GitHub Actions."><meta name=keywords content="robolectric,roborazzi,screenshot-test,"><meta property="og:url" content="https://onseok.github.io/posts/roborazzi/"><meta property="og:site_name" content="onseok"><meta property="og:title" content="Building Visual Screenshot Change Detection Tests for Android with Roborazzi"><meta property="og:description" content="Learn how to visualize UI changes in Android apps through screenshot testing and build an automated CI pipeline with GitHub Actions."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-03-09T00:00:00+00:00"><meta property="article:modified_time" content="2025-03-09T00:00:00+00:00"><meta property="article:tag" content="Robolectric"><meta property="article:tag" content="Roborazzi"><meta property="article:tag" content="Screenshot-Test"><meta property="og:image" content="https://onseok.github.io/posts/roborazzi/thumbnail.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://onseok.github.io/posts/roborazzi/thumbnail.png"><meta name=twitter:title content="Building Visual Screenshot Change Detection Tests for Android with Roborazzi"><meta name=twitter:description content="Learn how to visualize UI changes in Android apps through screenshot testing and build an automated CI pipeline with GitHub Actions."><meta itemprop=name content="Building Visual Screenshot Change Detection Tests for Android with Roborazzi"><meta itemprop=description content="Learn how to visualize UI changes in Android apps through screenshot testing and build an automated CI pipeline with GitHub Actions."><meta itemprop=datePublished content="2025-03-09T00:00:00+00:00"><meta itemprop=dateModified content="2025-03-09T00:00:00+00:00"><meta itemprop=wordCount content="2323"><meta itemprop=image content="https://onseok.github.io/posts/roborazzi/thumbnail.png"><meta itemprop=keywords content="Robolectric,Roborazzi,Screenshot-Test"><meta name=referrer content="no-referrer-when-downgrade"><style>:root{--width:720px;--font-main:Verdana, sans-serif;--font-secondary:Verdana, sans-serif;--font-scale:1em;--background-color:#fff;--heading-color:#222;--text-color:#444;--link-color:#3273dc;--visited-color:#8b6fcb;--blockquote-color:#222}@media(prefers-color-scheme:dark){:root{--background-color:#01242e;--heading-color:#eee;--text-color:#ddd;--link-color:#8cc2dd;--visited-color:#8b6fcb;--blockquote-color:#ccc}}body{font-family:var(--font-secondary);font-size:var(--font-scale);margin:auto;padding:20px;max-width:var(--width);text-align:left;background-color:var(--background-color);word-wrap:break-word;overflow-wrap:break-word;line-height:1.5;color:var(--text-color)}h1,h2,h3,h4,h5,h6{font-family:var(--font-main);color:var(--heading-color)}a{color:var(--link-color);cursor:pointer;text-decoration:none}a:hover{text-decoration:underline}nav a{margin-right:8px}strong,b{color:var(--heading-color)}button{margin:0;cursor:pointer}time{font-family:monospace;font-style:normal;font-size:15px}main{line-height:1.6}table{width:100%}hr{border:0;border-top:1px dashed}img{max-width:100%}code{font-family:monospace;padding:2px;border-radius:3px}blockquote{border-left:1px solid #999;color:var(--blockquote-color);padding-left:20px;font-style:italic}footer{padding:25px 0;text-align:center}.title:hover{text-decoration:none}.title h1{font-size:1.5em}.inline{width:auto!important}.highlight,.code{border-radius:3px;margin-block-start:1em;margin-block-end:1em;overflow-x:auto}ul.blog-posts{list-style-type:none;padding:unset}ul.blog-posts li{display:flex}ul.blog-posts li span{flex:0 0 130px}ul.blog-posts li a:visited{color:var(--visited-color)}</style><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css integrity=sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib crossorigin=anonymous><style>.bg{color:#f8f8f2;background-color:#272822}.chroma{color:#f8f8f2;background-color:#272822;-webkit-text-size-adjust:none}.chroma .err{color:#960050;background-color:#1e0010}.chroma .lnlinks{outline:none;text-decoration:none;color:inherit}.chroma .lntd{vertical-align:top;padding:0;margin:0;border:0}.chroma .lntable{border-spacing:0;padding:0;margin:0;border:0}.chroma .hl{background-color:#3c3d38}.chroma .lnt{white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f}.chroma .ln{white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f}.chroma .line{display:flex}.chroma .k{color:#66d9ef}.chroma .kc{color:#66d9ef}.chroma .kd{color:#66d9ef}.chroma .kn{color:#f92672}.chroma .kp{color:#66d9ef}.chroma .kr{color:#66d9ef}.chroma .kt{color:#66d9ef}.chroma .na{color:#a6e22e}.chroma .nc{color:#a6e22e}.chroma .no{color:#66d9ef}.chroma .nd{color:#a6e22e}.chroma .ne{color:#a6e22e}.chroma .nx{color:#a6e22e}.chroma .nt{color:#f92672}.chroma .nf{color:#a6e22e}.chroma .fm{color:#a6e22e}.chroma .l{color:#ae81ff}.chroma .ld{color:#e6db74}.chroma .s{color:#e6db74}.chroma .sa{color:#e6db74}.chroma .sb{color:#e6db74}.chroma .sc{color:#e6db74}.chroma .dl{color:#e6db74}.chroma .sd{color:#e6db74}.chroma .s2{color:#e6db74}.chroma .se{color:#ae81ff}.chroma .sh{color:#e6db74}.chroma .si{color:#e6db74}.chroma .sx{color:#e6db74}.chroma .sr{color:#e6db74}.chroma .s1{color:#e6db74}.chroma .ss{color:#e6db74}.chroma .m{color:#ae81ff}.chroma .mb{color:#ae81ff}.chroma .mf{color:#ae81ff}.chroma .mh{color:#ae81ff}.chroma .mi{color:#ae81ff}.chroma .il{color:#ae81ff}.chroma .mo{color:#ae81ff}.chroma .o{color:#f92672}.chroma .ow{color:#f92672}.chroma .c{color:#75715e}.chroma .ch{color:#75715e}.chroma .cm{color:#75715e}.chroma .c1{color:#75715e}.chroma .cs{color:#75715e}.chroma .cp{color:#75715e}.chroma .cpf{color:#75715e}.chroma .gd{color:#f92672}.chroma .ge{font-style:italic}.chroma .gi{color:#a6e22e}.chroma .gs{font-weight:700}.chroma .gu{color:#75715e}</style><style>.highlight pre{padding:1em;border-radius:6px;font-size:.875em;line-height:1.5}.highlight{background:#272822;border-radius:6px}@media(prefers-color-scheme:dark){.highlight{background:#1a1a2e}.chroma{background-color:#1a1a2e}}code:not(pre code){background:rgba(175,184,193,.2);padding:.2em .4em;border-radius:4px;font-size:.875em}@media(prefers-color-scheme:dark){code:not(pre code){background:rgba(240,246,252,.15)}}table{border-collapse:collapse;width:100%;margin:1.5em 0;font-size:.9em}th,td{border:1px solid #ddd;padding:.6em .8em;text-align:left}th{background:rgba(0,0,0,5%);font-weight:600}@media(prefers-color-scheme:dark){th,td{border-color:#444}th{background:rgba(255,255,255,8%)}}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}blockquote{margin:1.5em 0;padding:.5em 1.2em;border-left-width:3px;border-left-color:var(--link-color)}content img,article img{border-radius:4px;margin:1em 0}</style></head><body><header><a href=/ class=title><h2>onseok</h2></a><nav><a href=/posts/>Posts</a>
+<a href=/tags/>Tags</a>
+<a href=/about/>About</a></nav></header><main><h1>Building Visual Screenshot Change Detection Tests for Android with Roborazzi</h1><p><i><time datetime=2025-03-09>09 Mar, 2025</time></i></p><content><p><img src=ui-testing.png alt></p><p>When developing Android apps, verifying that UI changes have been correctly applied is essential. This is especially important in the Android ecosystem, which must support a wide variety of screen sizes and resolutions. However, code review alone makes it difficult to accurately identify UI changes, and as team size grows, it becomes increasingly easy to miss unintended UI modifications.</p><p>Recently, I built a screenshot testing system using <a href=https://github.com/takahirom/roborazzi>Roborazzi</a> for a project at my company. In this post, I will share my experience from adopting <code>Roborazzi</code> through building a CI pipeline with <code>GitHub Actions</code>.</p><h2 id=introduction-to-roborazzi>Introduction to Roborazzi</h2><p><a href=https://github.com/takahirom/roborazzi>Roborazzi</a> is an Android screenshot testing library based on <a href=https://robolectric.org/>Robolectric</a>. It leverages Robolectric&rsquo;s Native Graphics Mode (RNG) to visualize Android integration tests running in a JVM environment. Although still in the experimental stage, it also provides experimental support for <a href="https://github.com/takahirom/roborazzi?tab=readme-ov-file#experimental-feature-ios-support">Compose Multiplatform iOS</a> and <a href="https://github.com/takahirom/roborazzi?tab=readme-ov-file#experimental-feature-compose-desktop-support">Compose Desktop</a>.</p><p>The greatest advantage of Roborazzi is that it can generate and compare screenshots in a JVM environment without a physical device, enabling fast test execution in CI environments. Additionally, it is used in Google&rsquo;s official sample project <a href=https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt>Now in Android</a>, providing production-level implementation examples as reference.</p><h3 id=paparazzi-vs-roborazzi>Paparazzi vs. Roborazzi</h3><p><a href=https://github.com/cashapp/paparazzi>Paparazzi</a> is an excellent tool for visualizing displays in a JVM environment, but it is not compatible with Robolectric, which mocks the Android framework. Roborazzi bridges this gap. By integrating with Robolectric, it enables testing with dependency injection tools like Hilt and allows interaction with actual components. Essentially, Roborazzi extends Paparazzi&rsquo;s capabilities by capturing screenshots through Robolectric, providing a more efficient and reliable testing process.</p><h3 id=key-gradle-tasks>Key Gradle Tasks</h3><p>Roborazzi provides the following Gradle tasks:</p><table><thead><tr><th>Task Name</th><th>Description</th></tr></thead><tbody><tr><td><strong>recordRoborazziDebug</strong></td><td>Capture and save screenshots</td></tr><tr><td><strong>compareRoborazziDebug</strong></td><td>Compare current images with saved images</td></tr><tr><td><strong>verifyRoborazziDebug</strong></td><td>Verify differences between current and saved images</td></tr><tr><td><strong>verifyAndRecordRoborazziDebug</strong></td><td>Verify images and record new baseline images if differences are found</td></tr><tr><td><strong>clearRoborazziDebug</strong></td><td>Delete saved screenshots (experimental)</td></tr></tbody></table><h2 id=project-setup>Project Setup</h2><h3 id=gradle-configuration>Gradle Configuration</h3><p>First, add the Roborazzi plugin to your project-level <code>build.gradle.kts</code>.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// root build.gradle.kts
+</span></span></span><span class=line><span class=cl><span class=n>plugins</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl>    <span class=n>id</span><span class=p>(</span><span class=s2>&#34;io.github.takahirom.roborazzi&#34;</span><span class=p>)</span> <span class=n>version</span> <span class=s2>&#34;[version]&#34;</span> <span class=n>apply</span> <span class=k>false</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>If you are using a buildScript block, configure it as follows:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// root build.gradle.kts
+</span></span></span><span class=line><span class=cl><span class=n>buildscript</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>dependencies</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl>    <span class=n>classpath</span><span class=p>(</span><span class=s2>&#34;io.github.takahirom.roborazzi:roborazzi-gradle-plugin:[version]&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>Then configure your module-level <code>build.gradle.kts</code> as follows:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// module build.gradle.kts
+</span></span></span><span class=line><span class=cl><span class=n>plugins</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl>    <span class=n>id</span><span class=p>(</span><span class=s2>&#34;io.github.takahirom.roborazzi&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>android</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Existing configuration
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>testOptions</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>unitTests</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>isIncludeAndroidResources</span> <span class=p>=</span> <span class=k>true</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Use Robolectric&#39;s hardware rendering mode
+</span></span></span><span class=line><span class=cl>            <span class=n>all</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>it</span><span class=p>.</span><span class=n>systemProperties</span><span class=p>[</span><span class=s2>&#34;robolectric.pixelCopyRenderMode&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s2>&#34;hardware&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>dependencies</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Core functions
+</span></span></span><span class=line><span class=cl>    <span class=n>testImplementation</span><span class=p>(</span><span class=s2>&#34;io.github.takahirom.roborazzi:roborazzi:[version]&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Jetpack Compose
+</span></span></span><span class=line><span class=cl>    <span class=n>testImplementation</span><span class=p>(</span><span class=s2>&#34;io.github.takahirom.roborazzi:roborazzi-compose:[version]&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// JUnit rules
+</span></span></span><span class=line><span class=cl>    <span class=n>testImplementation</span><span class=p>(</span><span class=s2>&#34;io.github.takahirom.roborazzi:roborazzi-junit-rule:[version]&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Roborazzi configuration
+</span></span></span><span class=line><span class=cl><span class=n>roborazzi</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Set reference image output directory
+</span></span></span><span class=line><span class=cl>    <span class=n>outputDir</span><span class=p>.</span><span class=k>set</span><span class=p>(</span><span class=k>file</span><span class=p>(</span><span class=s2>&#34;src/test/screenshots&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Set comparison image output directory (Experimental option)
+</span></span></span><span class=line><span class=cl>    <span class=n>compare</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>outputDir</span><span class=p>.</span><span class=k>set</span><span class=p>(</span><span class=k>file</span><span class=p>(</span><span class=s2>&#34;build/outputs/screenshots_comparison&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=additional-gradleproperties-configuration>Additional gradle.properties Configuration</h3><p>Roborazzi supports various options that can be configured in the <code>gradle.properties</code> file.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-properties data-lang=properties><span class=line><span class=cl><span class=c1># Screenshot test activation options</span>
+</span></span><span class=line><span class=cl><span class=na>roborazzi.test.record</span><span class=o>=</span><span class=s>true</span>
+</span></span><span class=line><span class=cl><span class=c1># roborazzi.test.compare=true</span>
+</span></span><span class=line><span class=cl><span class=c1># roborazzi.test.verify=true</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># Image resize scale setting</span>
+</span></span><span class=line><span class=cl><span class=na>roborazzi.record.resizeScale</span><span class=o>=</span><span class=s>0.5</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># File path strategy setting</span>
+</span></span><span class=line><span class=cl><span class=c1># Default is relativePathFromCurrentDirectory</span>
+</span></span><span class=line><span class=cl><span class=na>roborazzi.record.filePathStrategy</span><span class=o>=</span><span class=s>relativePathFromRoborazziContextOutputDirectory</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># Image format setting (WebP support, Experimental)</span>
+</span></span><span class=line><span class=cl><span class=c1># roborazzi.record.image.extension=webp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># Automatic cleanup of old screenshots (use with caution)</span>
+</span></span><span class=line><span class=cl><span class=c1># roborazzi.cleanupOldScreenshots=true</span>
+</span></span></code></pre></div><h2 id=writing-screenshot-tests>Writing Screenshot Tests</h2><p>Now let&rsquo;s write actual screenshot tests. <code>Roborazzi</code> supports various screenshot capture methods, with the key APIs as follows:</p><table><thead><tr><th>Capture Target</th><th>Code Example</th></tr></thead><tbody><tr><td><strong>Jetpack Compose</strong></td><td><code>composeTestRule.onNodeWithTag("AddBoxButton").captureRoboImage()</code></td></tr><tr><td><strong>Espresso View</strong></td><td><code>onView(ViewMatchers.isRoot()).captureRoboImage()</code></td></tr><tr><td><strong>Plain View</strong></td><td><code>view.captureRoboImage()</code></td></tr><tr><td><strong>Compose Lambda</strong></td><td><code>captureRoboImage { Text("Hello Compose!") }</code></td></tr><tr><td><strong>Full Screen (Experimental)</strong></td><td><code>captureScreenRoboImage()</code></td></tr><tr><td><strong>Bitmap</strong></td><td><code>bitmap.captureRoboImage()</code></td></tr></tbody></table><p>Here is an example of a screenshot test for a Jetpack Compose login screen:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@RunWith</span><span class=p>(</span><span class=n>RobolectricTestRunner</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@GraphicsMode</span><span class=p>(</span><span class=nc>GraphicsMode</span><span class=p>.</span><span class=nc>Mode</span><span class=p>.</span><span class=n>NATIVE</span><span class=p>)</span> <span class=c1>// Enable Robolectric Native Graphics mode (required)
+</span></span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>LoginScreenshotTest</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@get</span><span class=p>:</span><span class=n>Rule</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>composeTestRule</span> <span class=p>=</span> <span class=n>createComposeRule</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Test</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>captureLoginScreen</span><span class=n>_defaultState</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Set up Compose UI
+</span></span></span><span class=line><span class=cl>        <span class=n>composeTestRule</span><span class=p>.</span><span class=n>setContent</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>MyAppTheme</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>LoginScreen</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=n>uiState</span> <span class=p>=</span> <span class=nc>LoginUiState</span><span class=p>.</span><span class=n>Default</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                    <span class=n>onLoginClick</span> <span class=p>=</span> <span class=p>{},</span>
+</span></span><span class=line><span class=cl>                    <span class=n>onEmailChanged</span> <span class=p>=</span> <span class=p>{},</span>
+</span></span><span class=line><span class=cl>                    <span class=n>onPasswordChanged</span> <span class=p>=</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Capture screenshot
+</span></span></span><span class=line><span class=cl>        <span class=n>composeTestRule</span><span class=p>.</span><span class=n>onRoot</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>captureRoboImage</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// Specify filename (saved to default output directory)
+</span></span></span><span class=line><span class=cl>                <span class=s2>&#34;loginScreen_defaultState&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// Additional option settings
+</span></span></span><span class=line><span class=cl>                <span class=n>roborazziOptions</span> <span class=p>=</span> <span class=n>RoborazziOptions</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=c1>// Image resizing
+</span></span></span><span class=line><span class=cl>                    <span class=n>recordOptions</span> <span class=p>=</span> <span class=nc>RoborazziOptions</span><span class=p>.</span><span class=n>RecordOptions</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                        <span class=n>resizeScale</span> <span class=p>=</span> <span class=mf>0.75f</span>
+</span></span><span class=line><span class=cl>                    <span class=p>),</span>
+</span></span><span class=line><span class=cl>                    <span class=c1>// Comparison options
+</span></span></span><span class=line><span class=cl>                    <span class=n>compareOptions</span> <span class=p>=</span> <span class=nc>RoborazziOptions</span><span class=p>.</span><span class=n>CompareOptions</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                        <span class=n>changeThreshold</span> <span class=p>=</span> <span class=mf>0.01f</span>
+</span></span><span class=line><span class=cl>                    <span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Test</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>captureLoginScreen</span><span class=n>_errorState</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>composeTestRule</span><span class=p>.</span><span class=n>setContent</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>MyAppTheme</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>LoginScreen</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=n>uiState</span> <span class=p>=</span> <span class=nc>LoginUiState</span><span class=p>.</span><span class=n>Error</span><span class=p>(</span><span class=s2>&#34;Invalid credentials&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>                    <span class=n>onLoginClick</span> <span class=p>=</span> <span class=p>{},</span>
+</span></span><span class=line><span class=cl>                    <span class=n>onEmailChanged</span> <span class=p>=</span> <span class=p>{},</span>
+</span></span><span class=line><span class=cl>                    <span class=n>onPasswordChanged</span> <span class=p>=</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// You can also capture specific components only
+</span></span></span><span class=line><span class=cl>        <span class=n>composeTestRule</span><span class=p>.</span><span class=n>onNodeWithTag</span><span class=p>(</span><span class=s2>&#34;errorMessage&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>captureRoboImage</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;loginScreen_errorMessage&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Full screen capture
+</span></span></span><span class=line><span class=cl>        <span class=n>composeTestRule</span><span class=p>.</span><span class=n>onRoot</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>captureRoboImage</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;loginScreen_errorState&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=using-roborazzirule>Using RoborazziRule</h3><p>Roborazzi supports more convenient test writing through JUnit rules. <code>RoborazziRule</code> is optional, but provides the following benefits:</p><ol><li>Provides context such as <code>RoborazziOptions</code> and <code>outputDirectoryPath</code></li><li>Supports various capture types (LastImage, AllImage, Gif, etc.)</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@RunWith</span><span class=p>(</span><span class=n>RobolectricTestRunner</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@GraphicsMode</span><span class=p>(</span><span class=nc>GraphicsMode</span><span class=p>.</span><span class=nc>Mode</span><span class=p>.</span><span class=n>NATIVE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>RuleTest</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@get</span><span class=p>:</span><span class=n>Rule</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>composeTestRule</span> <span class=p>=</span> <span class=n>createComposeRule</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@get</span><span class=p>:</span><span class=n>Rule</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>roborazziRule</span> <span class=p>=</span> <span class=n>RoborazziRule</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>composeRule</span> <span class=p>=</span> <span class=n>composeTestRule</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>captureRoot</span> <span class=p>=</span> <span class=n>composeTestRule</span><span class=p>.</span><span class=n>onRoot</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>        <span class=n>options</span> <span class=p>=</span> <span class=nc>RoborazziRule</span><span class=p>.</span><span class=n>Options</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Capture images only on test failure
+</span></span></span><span class=line><span class=cl>            <span class=n>captureType</span> <span class=p>=</span> <span class=nc>RoborazziRule</span><span class=p>.</span><span class=nc>CaptureType</span><span class=p>.</span><span class=n>Gif</span><span class=p>(</span><span class=n>onlyFail</span> <span class=p>=</span> <span class=k>true</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Image comparison option settings
+</span></span></span><span class=line><span class=cl>            <span class=n>roborazziOptions</span> <span class=p>=</span> <span class=n>RoborazziOptions</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>compareOptions</span> <span class=p>=</span> <span class=nc>RoborazziOptions</span><span class=p>.</span><span class=n>CompareOptions</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=c1>// Settings to address anti-aliasing issues
+</span></span></span><span class=line><span class=cl>                    <span class=n>imageComparator</span> <span class=p>=</span> <span class=n>SimpleImageComparator</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                        <span class=n>maxDistance</span> <span class=p>=</span> <span class=mf>0.007f</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                        <span class=n>vShift</span> <span class=p>=</span> <span class=mi>2</span><span class=p>,</span>    <span class=c1>// Allow vertical shift
+</span></span></span><span class=line><span class=cl>                        <span class=n>hShift</span> <span class=p>=</span> <span class=mi>2</span>     <span class=c1>// Allow horizontal shift
+</span></span></span><span class=line><span class=cl>                    <span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Test</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Annotation to ignore RoborazziRule
+</span></span></span><span class=line><span class=cl>    <span class=c1>// @RoborazziRule.Ignore
+</span></span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>testWithRule</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>composeTestRule</span><span class=p>.</span><span class=n>setContent</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>MyAppTheme</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// ...
+</span></span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// RoborazziRule automatically captures images during test execution
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=gif-image-capture>GIF Image Capture</h3><p>Roborazzi also supports generating GIF images to show animations or user interactions.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@Test</span>
+</span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>captureRoboGifSample</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>onView</span><span class=p>(</span><span class=nc>ViewMatchers</span><span class=p>.</span><span class=n>isRoot</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=n>captureRoboGif</span><span class=p>(</span><span class=s2>&#34;build/test.gif&#34;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Launch the app
+</span></span></span><span class=line><span class=cl>            <span class=nc>ActivityScenario</span><span class=p>.</span><span class=n>launch</span><span class=p>(</span><span class=n>MainActivity</span><span class=o>::</span><span class=k>class</span><span class=p>.</span><span class=n>java</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Navigate to next page
+</span></span></span><span class=line><span class=cl>            <span class=n>onView</span><span class=p>(</span><span class=n>withId</span><span class=p>(</span><span class=nc>R</span><span class=p>.</span><span class=n>id</span><span class=p>.</span><span class=n>button_first</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>perform</span><span class=p>(</span><span class=n>click</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Go back
+</span></span></span><span class=line><span class=cl>            <span class=n>pressBack</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Navigate to next page again
+</span></span></span><span class=line><span class=cl>            <span class=n>onView</span><span class=p>(</span><span class=n>withId</span><span class=p>(</span><span class=nc>R</span><span class=p>.</span><span class=n>id</span><span class=p>.</span><span class=n>button_first</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>perform</span><span class=p>(</span><span class=n>click</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=testing-with-various-device-configurations>Testing with Various Device Configurations</h3><p>To better reflect real-world usage environments, it is recommended to capture screenshots across various device configurations (screen size, orientation, dark mode, etc.). Roborazzi provides predefined device configurations through <code>RobolectricDeviceQualifiers</code>.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// Set default device configuration at class level
+</span></span></span><span class=line><span class=cl><span class=nd>@RunWith</span><span class=p>(</span><span class=n>RobolectricTestRunner</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@GraphicsMode</span><span class=p>(</span><span class=nc>GraphicsMode</span><span class=p>.</span><span class=nc>Mode</span><span class=p>.</span><span class=n>NATIVE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=nc>RobolectricDeviceQualifiers</span><span class=p>.</span><span class=n>Pixel5</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>DeviceSpecificScreenshotTest</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Apply different configuration to specific test methods only
+</span></span></span><span class=line><span class=cl><span class=nd>@Test</span>
+</span></span><span class=line><span class=cl><span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=nc>RobolectricDeviceQualifiers</span><span class=p>.</span><span class=n>MediumTablet</span> <span class=p>+</span> <span class=s2>&#34;+land&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>captureLoginScreen</span><span class=n>_landscapeTablet</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Dark mode configuration
+</span></span></span><span class=line><span class=cl><span class=nd>@Test</span>
+</span></span><span class=line><span class=cl><span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;+night&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>captureLoginScreen</span><span class=n>_darkMode</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Locale configuration
+</span></span></span><span class=line><span class=cl><span class=nd>@Test</span>
+</span></span><span class=line><span class=cl><span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;+ja&#34;</span><span class=p>)</span>  <span class=c1>// Japanese locale
+</span></span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>captureLoginScreen</span><span class=n>_japaneseLocale</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=rendering-differences-across-operating-systems>Rendering Differences Across Operating Systems</h2><p>There are a few caveats to be aware of when using Roborazzi.</p><h3 id=1-cross-os-rendering-inconsistency>1. Cross-OS Rendering Inconsistency</h3><p>Roborazzi uses the <a href=https://skia.org/>Skia</a> library to render UI, and rendering results may differ slightly across operating systems. This is a known issue also mentioned in the <a href="https://github.com/takahirom/roborazzi?tab=readme-ov-file#q-why-do-my-screenshot-tests-fail-inconsistently-across-different-operating-systems-like-macos-ubuntu-and-windows">FAQ - Why do my screenshot tests fail inconsistently across different operating systems like MacOS, Ubuntu, and Windows?</a>.</p><p>This issue was also <a href=https://github.com/android/nowinandroid/issues/1242#issuecomment-2032962982>discussed in the Now in Android project</a>, confirming that identical rendering cannot be guaranteed across all environments. For reference, this is also why screenshot verification tasks failed on my local PC (Mac). The main causes are:</p><ul><li>Differences in graphics driver implementations across OSes</li><li>Differences in font rendering approaches</li><li>Differences in anti-aliasing handling</li></ul><p>While you could address this by adjusting options in <code>RoborazziOptions.CompareOptions</code>, I felt that gradually relaxing the verification conditions would defeat the purpose of comparing screenshots. Therefore, following the advice of Roborazzi&rsquo;s author <a href=https://github.com/takahirom>takahirom</a>, I configured both baseline image generation and verification to run in the same CI environment for consistency.</p><p><img src=now-in-android-roborazzi-compare-options.png alt></p><blockquote><p>In fact, you can confirm that <a href=https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt>nowinandroid</a> also does not compromise on image comparison options.</p></blockquote><h3 id=2-resolving-memory-issues>2. Resolving Memory Issues</h3><p>Running many screenshot tests with complex UIs can cause <code>OutOfMemoryError</code>. This is a known issue also discussed in <a href=https://github.com/takahirom/roborazzi/issues/272>Issue #272</a>, and can be resolved by adjusting <code>maxHeapSize</code> as follows:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// build.gradle.kts
+</span></span></span><span class=line><span class=cl><span class=n>android</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>testOptions</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>unitTests</span><span class=p>.</span><span class=n>all</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>maxHeapSize</span> <span class=p>=</span> <span class=s2>&#34;4096m&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=3-resolving-corrupted-image-issues>3. Resolving Corrupted Image Issues</h3><p>In some cases, images captured by Roborazzi may appear broken. This is typically caused by an API level that is too low or Robolectric rendering mode configuration issues. As discussed in <a href=https://github.com/takahirom/roborazzi/issues/255#issuecomment-1972838571>Issue #255</a>, the following configuration can resolve this:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// Apply to test class
+</span></span></span><span class=line><span class=cl><span class=nd>@Config</span><span class=p>(</span><span class=n>sdk</span> <span class=p>=</span> <span class=p>[</span><span class=mi>35</span><span class=p>])</span>  <span class=c1>// Use latest API level
+</span></span></span><span class=line><span class=cl><span class=nd>@GraphicsMode</span><span class=p>(</span><span class=nc>GraphicsMode</span><span class=p>.</span><span class=nc>Mode</span><span class=p>.</span><span class=n>NATIVE</span><span class=p>)</span>  <span class=c1>// Native Graphics mode is required
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// build.gradle.kts
+</span></span></span><span class=line><span class=cl><span class=n>android</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>testOptions</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>unitTests</span><span class=p>.</span><span class=n>all</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>it</span><span class=p>.</span><span class=n>systemProperties</span><span class=p>[</span><span class=s2>&#34;robolectric.pixelCopyRenderMode&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=s2>&#34;hardware&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>These settings resolved most rendering issues.</p><p><img src=robolectric-4.1.4.png alt></p><blockquote><p>For reference, <a href=https://github.com/robolectric/robolectric/releases/tag/robolectric-4.14>Robolectric 4.14</a> and later supports Android V (SDK 35).</p></blockquote><h2 id=building-the-ci-pipeline>Building the CI Pipeline</h2><p>After writing tests, integrating them into a CI pipeline is crucial. I built a system using GitHub Actions that automatically runs screenshot tests whenever a PR is created and visually displays any changes.</p><h3 id=github-actions-workflow-configuration>GitHub Actions Workflow Configuration</h3><p>Here is an example workflow configuration using GitHub Actions:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Android Pull Request CI</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=nt>on</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>pull_request</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>branches</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>main, develop ]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=nt>jobs</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>verify-screenshots</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>runs-on</span><span class=p>:</span><span class=w> </span><span class=l>ubuntu-latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>permissions</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>checks</span><span class=p>:</span><span class=w> </span><span class=l>write</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>pull-requests</span><span class=p>:</span><span class=w> </span><span class=l>write</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>contents</span><span class=p>:</span><span class=w> </span><span class=l>write</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>steps</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Checkout the code</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>actions/checkout@v4</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>fetch-depth</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Set up JDK</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>actions/setup-java@v4</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>distribution</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;temurin&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>java-version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;17&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>cache</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;gradle&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Set up Android SDK</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>android-actions/setup-android@v3</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Grant execute permission for gradlew</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>chmod +x gradlew</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Run ktlint</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>./gradlew ktlintCheck</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Screenshot verification step</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Verify Roborazzi Screenshots</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>screenshotsverify</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>continue-on-error</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>./gradlew verifyRoborazziDebug</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Generate new screenshots if verification fails</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Generate new screenshots if verification failed</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>screenshotsrecord</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.screenshotsverify.outcome == &#39;failure&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>./gradlew recordRoborazziDebug</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Extract JIRA ticket from branch name (adjust to your team&#39;s workflow)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Extract JIRA ticket</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>extract_ticket</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.screenshotsrecord.outcome == &#39;success&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          BRANCH_NAME=$(echo ${{ github.head_ref }})
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;branch_name=$BRANCH_NAME&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          if [[ $BRANCH_NAME =~ (TICKET-[0-9]+) ]]; then
+</span></span></span><span class=line><span class=cl><span class=sd>            TICKET=&#34;${BASH_REMATCH[1]}&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;ticket=$TICKET&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;Found JIRA ticket: $TICKET&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          else
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;ticket=NO-TICKET&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;No JIRA ticket found in branch name&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          fi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Commit new screenshots</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Push new screenshots if available</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>stefanzweifel/git-auto-commit-action@v5</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.screenshotsrecord.outcome == &#39;success&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>file_pattern</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;**/*.png&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>disable_globbing</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>commit_message</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;${{ steps.extract_ticket.outputs.ticket != &#39;NO-TICKET&#39; &amp;&amp; format(&#39;{0} feat: update screenshots&#39;, steps.extract_ticket.outputs.ticket) || &#39;NO-TICKET feat: update screenshots&#39; }}&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Collect comparison images</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Copy screenshot comparison files</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>copy_screenshots</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.screenshotsverify.outcome == &#39;failure&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          mkdir -p /tmp/screenshot-diff
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          cd ${{ github.workspace }}
+</span></span></span><span class=line><span class=cl><span class=sd>          find . -name &#34;*_compare.png&#34; -exec cp {} /tmp/screenshot-diff/ \;
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          if [ -z &#34;$(find /tmp/screenshot-diff -type f -name &#39;*.png&#39;)&#34; ]; then
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;No screenshot files found&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;has_images=false&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>          else
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;Found screenshot comparison images:&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>            ls -la /tmp/screenshot-diff
+</span></span></span><span class=line><span class=cl><span class=sd>            echo &#34;has_images=true&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>          fi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Create Companion Branch</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Create companion branch for screenshot comparison</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>companion_branch</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.copy_screenshots.outputs.has_images == &#39;true&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          BRANCH_NAME=&#34;screenshot-compare-${{ github.event.pull_request.number }}&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;branch_name=$BRANCH_NAME&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          git config --global user.name &#34;GitHub Actions&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          git config --global user.email &#34;actions@github.com&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          git stash -u || true
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          git branch -D &#34;$BRANCH_NAME&#34; || true
+</span></span></span><span class=line><span class=cl><span class=sd>          git checkout --orphan &#34;$BRANCH_NAME&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          git rm -rf .
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          mkdir -p screenshot-diff
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          cp /tmp/screenshot-diff/*.png screenshot-diff/
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          git add screenshot-diff
+</span></span></span><span class=line><span class=cl><span class=sd>          git commit -m &#34;Add screenshot comparison results&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          git push origin &#34;$BRANCH_NAME&#34; -f
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;companion_push_success=true&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          git checkout -f ${{ github.head_ref }} || git checkout -f HEAD</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Generate markdown report</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Generate markdown report for screenshot diffs</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>generate_report</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.companion_branch.outputs.companion_push_success == &#39;true&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          REPORT=&#34;## Screenshot Comparison Results\n\n&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          REPORT+=&#34;| Screen Name | Comparison Image |\n&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          REPORT+=&#34;|:--------:|:----------:|\n&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          BRANCH_NAME=&#34;${{ steps.companion_branch.outputs.branch_name }}&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          for FILE in /tmp/screenshot-diff/*.png; do
+</span></span></span><span class=line><span class=cl><span class=sd>            FILENAME=$(basename &#34;$FILE&#34;)
+</span></span></span><span class=line><span class=cl><span class=sd>            SCREENNAME=${FILENAME%_compare.png}
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>            IMG_URL=&#34;https://github.com/${{ github.repository }}/blob/$BRANCH_NAME/screenshot-diff/$FILENAME?raw=true&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>            REPORT+=&#34;| \`$SCREENNAME\` | ![Screenshot]($IMG_URL) |\n&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>          done
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;report&lt;&lt;$EOF&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>          echo -e &#34;$REPORT&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;$EOF&#34; &gt;&gt; $GITHUB_OUTPUT
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;found_images=true&#34; &gt;&gt; $GITHUB_OUTPUT</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Find existing PR comment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Find existing comment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>peter-evans/find-comment@v3</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>find_comment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.generate_report.outputs.found_images == &#39;true&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>issue-number</span><span class=p>:</span><span class=w> </span><span class=l>${{ github.event.pull_request.number }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>comment-author</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;github-actions[bot]&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>body-includes</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;## Screenshot Comparison Results&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Create or update PR comment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Create or update comment with comparison results</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>peter-evans/create-or-update-comment@v4</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>steps.generate_report.outputs.found_images == &#39;true&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>comment-id</span><span class=p>:</span><span class=w> </span><span class=l>${{ steps.find_comment.outputs.comment-id }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>issue-number</span><span class=p>:</span><span class=w> </span><span class=l>${{ github.event.pull_request.number }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>body</span><span class=p>:</span><span class=w> </span><span class=l>${{ steps.generate_report.outputs.report }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>edit-mode</span><span class=p>:</span><span class=w> </span><span class=l>replace</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># Run unit tests</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Run unit tests</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>./gradlew testDebugUnitTest --stacktrace</span><span class=w>
+</span></span></span></code></pre></div><p>When the process completes successfully, you can verify that the comment is properly created as shown below:
+<img src=github-pr-comment-sample.png alt="(Screen names are redacted with white boxes for security reasons.)"></p><p>This workflow operates in the following sequence:</p><ol><li>When a PR is created, the screenshot verification task (<code>verifyRoborazziDebug</code>) is executed.</li><li>If verification fails (meaning there are UI changes), new screenshots are generated (<code>recordRoborazziDebug</code>).</li><li>The JIRA ticket number is extracted from the branch name and included in the commit message. This part can be adjusted to match your company or team&rsquo;s workflow. (For example, you could use GitLab issue numbers or other work ID formats instead of JIRA.)</li><li>Screenshot comparison images are stored in a separate temporary branch (companion branch).</li><li>A markdown report containing the comparison images is generated and added as a PR comment.</li></ol><h3 id=the-companion-branch-approach>The Companion Branch Approach</h3><p>You might naturally wonder: if the number of screenshot images grows excessively, won&rsquo;t the repository size keep increasing?</p><p>That is why the <code>Companion Branch Approach</code> was proposed in <a href=https://github.com/DroidKaigi/conference-app-2022/pull/616>DroidKaigi/conference-app-2022</a>.</p><p><img src=companion-branch-approach.png alt></p><p>In the workflow I wrote, comparison images are stored in a temporary branch to prevent the main codebase repository from growing in size, but reference images are still committed to the repository. As shown in the attached diagram, you could further improve this by uploading reference images to GitHub Actions Artifacts and performing the verification task against comparison images created in the <code>companion branch</code>. Also, while the default retention period for GitHub Actions Artifacts is 90 days, if you estimate that the time from PR creation to review and merge completion is typically within one month, you could set the retention period to 30 days as follows:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Store reference images as artifacts</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>actions/upload-artifact@v4</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>reference-screenshots</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>src/test/screenshots</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>retention-days</span><span class=p>:</span><span class=w> </span><span class=m>30</span><span class=w>
+</span></span></span></code></pre></div><p>In fact, Part 3 of <em>The Software Engineer&rsquo;s Guidebook</em> also covers this topic in the <code>Snapshot Testing</code> chapter:</p><blockquote><p>The biggest downside of using a snapshot test suite is that the reference images used for comparison can become too large to keep in the same repository as the test code. At companies with a large number of snapshot tests, it is common to store reference images outside the code repository.</p></blockquote><h2 id=conclusion>Conclusion</h2><p>Screenshot testing with Roborazzi can be a great help in improving the UI quality of Android apps. In particular, integrating it with a CI pipeline to build an automated UI verification system was valuable, as it enables early detection and visual confirmation of unintended UI changes.</p><p>Note that this post does not cover all of Roborazzi&rsquo;s features. It is important to continuously monitor new features and changes with each <a href=https://github.com/takahirom/roborazzi/releases>release</a>.</p><h2 id=references>References</h2><ul><li><a href=https://github.com/takahirom/roborazzi>https://github.com/takahirom/roborazzi</a></li><li><a href=https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt>https://github.com/android/nowinandroid/blob/main/core/screenshot-testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/util/ScreenshotHelper.kt</a></li><li><a href=https://github.com/android/nowinandroid/issues/1242#issuecomment-2032962982>https://github.com/android/nowinandroid/issues/1242#issuecomment-2032962982</a></li><li><a href=https://github.com/DroidKaigi/conference-app-2022/pull/616>https://github.com/DroidKaigi/conference-app-2022/pull/616</a></li><li><a href=https://github.com/takahirom/roborazzi-compare-on-github-comment-sample>https://github.com/takahirom/roborazzi-compare-on-github-comment-sample</a></li><li><a href=https://robolectric.org/configuring/>https://robolectric.org/configuring/</a></li><li><a href="https://github.com/actions/upload-artifact?tab=readme-ov-file#retention-period">https://github.com/actions/upload-artifact?tab=readme-ov-file#retention-period</a></li></ul></content><p><a href=https://onseok.github.io/tags/robolectric/>#Robolectric</a>
+<a href=https://onseok.github.io/tags/roborazzi/>#Roborazzi</a>
+<a href=https://onseok.github.io/tags/screenshot-test/>#Screenshot-Test</a></p><hr><script src=https://giscus.app/client.js data-repo=onseok/onseok.github.io data-repo-id=R_kgDOOBxzWA data-category=Comments data-category-id=DIC_kwDOOBxzWM4CnfcD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=en crossorigin=anonymous async></script></main><footer></footer><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js integrity=sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js integrity=sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh crossorigin=anonymous onload='renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\\\(",right:"\\\\)",display:!1},{left:"\\\\[",right:"\\\\]",display:!0}],throwOnError:!1})'></script></body></html>

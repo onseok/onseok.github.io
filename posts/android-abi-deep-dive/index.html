@@ -1,0 +1,350 @@
+<!doctype html><html lang=en-us><head><meta http-equiv=X-Clacks-Overhead content="GNU Terry Pratchett"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel="shortcut icon" href=https://onseok.github.io/favicon.png><title>Why Native Code Works on Android | onseok</title><meta name=title content="Why Native Code Works on Android"><meta name=description content="A deep dive into how Java/Kotlin and C/C++ code can work together on Android, from the perspective of ABI (Application Binary Interface)."><meta name=keywords content="android,abi,ndk,native,"><meta property="og:url" content="https://onseok.github.io/posts/android-abi-deep-dive/"><meta property="og:site_name" content="onseok"><meta property="og:title" content="Why Native Code Works on Android"><meta property="og:description" content="A deep dive into how Java/Kotlin and C/C++ code can work together on Android, from the perspective of ABI (Application Binary Interface)."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-09-07T00:00:00+00:00"><meta property="article:modified_time" content="2025-09-07T00:00:00+00:00"><meta property="article:tag" content="Android"><meta property="article:tag" content="Abi"><meta property="article:tag" content="Ndk"><meta property="article:tag" content="Native"><meta property="og:image" content="https://onseok.github.io/posts/android-abi-deep-dive/thumbnail.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://onseok.github.io/posts/android-abi-deep-dive/thumbnail.png"><meta name=twitter:title content="Why Native Code Works on Android"><meta name=twitter:description content="A deep dive into how Java/Kotlin and C/C++ code can work together on Android, from the perspective of ABI (Application Binary Interface)."><meta itemprop=name content="Why Native Code Works on Android"><meta itemprop=description content="A deep dive into how Java/Kotlin and C/C++ code can work together on Android, from the perspective of ABI (Application Binary Interface)."><meta itemprop=datePublished content="2025-09-07T00:00:00+00:00"><meta itemprop=dateModified content="2025-09-07T00:00:00+00:00"><meta itemprop=wordCount content="2475"><meta itemprop=image content="https://onseok.github.io/posts/android-abi-deep-dive/thumbnail.png"><meta itemprop=keywords content="Android,Abi,Ndk,Native"><meta name=referrer content="no-referrer-when-downgrade"><style>:root{--width:720px;--font-main:Verdana, sans-serif;--font-secondary:Verdana, sans-serif;--font-scale:1em;--background-color:#fff;--heading-color:#222;--text-color:#444;--link-color:#3273dc;--visited-color:#8b6fcb;--blockquote-color:#222}@media(prefers-color-scheme:dark){:root{--background-color:#01242e;--heading-color:#eee;--text-color:#ddd;--link-color:#8cc2dd;--visited-color:#8b6fcb;--blockquote-color:#ccc}}body{font-family:var(--font-secondary);font-size:var(--font-scale);margin:auto;padding:20px;max-width:var(--width);text-align:left;background-color:var(--background-color);word-wrap:break-word;overflow-wrap:break-word;line-height:1.5;color:var(--text-color)}h1,h2,h3,h4,h5,h6{font-family:var(--font-main);color:var(--heading-color)}a{color:var(--link-color);cursor:pointer;text-decoration:none}a:hover{text-decoration:underline}nav a{margin-right:8px}strong,b{color:var(--heading-color)}button{margin:0;cursor:pointer}time{font-family:monospace;font-style:normal;font-size:15px}main{line-height:1.6}table{width:100%}hr{border:0;border-top:1px dashed}img{max-width:100%}code{font-family:monospace;padding:2px;border-radius:3px}blockquote{border-left:1px solid #999;color:var(--blockquote-color);padding-left:20px;font-style:italic}footer{padding:25px 0;text-align:center}.title:hover{text-decoration:none}.title h1{font-size:1.5em}.inline{width:auto!important}.highlight,.code{border-radius:3px;margin-block-start:1em;margin-block-end:1em;overflow-x:auto}ul.blog-posts{list-style-type:none;padding:unset}ul.blog-posts li{display:flex}ul.blog-posts li span{flex:0 0 130px}ul.blog-posts li a:visited{color:var(--visited-color)}</style><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css integrity=sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib crossorigin=anonymous><style>.bg{color:#f8f8f2;background-color:#272822}.chroma{color:#f8f8f2;background-color:#272822;-webkit-text-size-adjust:none}.chroma .err{color:#960050;background-color:#1e0010}.chroma .lnlinks{outline:none;text-decoration:none;color:inherit}.chroma .lntd{vertical-align:top;padding:0;margin:0;border:0}.chroma .lntable{border-spacing:0;padding:0;margin:0;border:0}.chroma .hl{background-color:#3c3d38}.chroma .lnt{white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f}.chroma .ln{white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f}.chroma .line{display:flex}.chroma .k{color:#66d9ef}.chroma .kc{color:#66d9ef}.chroma .kd{color:#66d9ef}.chroma .kn{color:#f92672}.chroma .kp{color:#66d9ef}.chroma .kr{color:#66d9ef}.chroma .kt{color:#66d9ef}.chroma .na{color:#a6e22e}.chroma .nc{color:#a6e22e}.chroma .no{color:#66d9ef}.chroma .nd{color:#a6e22e}.chroma .ne{color:#a6e22e}.chroma .nx{color:#a6e22e}.chroma .nt{color:#f92672}.chroma .nf{color:#a6e22e}.chroma .fm{color:#a6e22e}.chroma .l{color:#ae81ff}.chroma .ld{color:#e6db74}.chroma .s{color:#e6db74}.chroma .sa{color:#e6db74}.chroma .sb{color:#e6db74}.chroma .sc{color:#e6db74}.chroma .dl{color:#e6db74}.chroma .sd{color:#e6db74}.chroma .s2{color:#e6db74}.chroma .se{color:#ae81ff}.chroma .sh{color:#e6db74}.chroma .si{color:#e6db74}.chroma .sx{color:#e6db74}.chroma .sr{color:#e6db74}.chroma .s1{color:#e6db74}.chroma .ss{color:#e6db74}.chroma .m{color:#ae81ff}.chroma .mb{color:#ae81ff}.chroma .mf{color:#ae81ff}.chroma .mh{color:#ae81ff}.chroma .mi{color:#ae81ff}.chroma .il{color:#ae81ff}.chroma .mo{color:#ae81ff}.chroma .o{color:#f92672}.chroma .ow{color:#f92672}.chroma .c{color:#75715e}.chroma .ch{color:#75715e}.chroma .cm{color:#75715e}.chroma .c1{color:#75715e}.chroma .cs{color:#75715e}.chroma .cp{color:#75715e}.chroma .cpf{color:#75715e}.chroma .gd{color:#f92672}.chroma .ge{font-style:italic}.chroma .gi{color:#a6e22e}.chroma .gs{font-weight:700}.chroma .gu{color:#75715e}</style><style>.highlight pre{padding:1em;border-radius:6px;font-size:.875em;line-height:1.5}.highlight{background:#272822;border-radius:6px}@media(prefers-color-scheme:dark){.highlight{background:#1a1a2e}.chroma{background-color:#1a1a2e}}code:not(pre code){background:rgba(175,184,193,.2);padding:.2em .4em;border-radius:4px;font-size:.875em}@media(prefers-color-scheme:dark){code:not(pre code){background:rgba(240,246,252,.15)}}table{border-collapse:collapse;width:100%;margin:1.5em 0;font-size:.9em}th,td{border:1px solid #ddd;padding:.6em .8em;text-align:left}th{background:rgba(0,0,0,5%);font-weight:600}@media(prefers-color-scheme:dark){th,td{border-color:#444}th{background:rgba(255,255,255,8%)}}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}blockquote{margin:1.5em 0;padding:.5em 1.2em;border-left-width:3px;border-left-color:var(--link-color)}content img,article img{border-radius:4px;margin:1em 0}</style></head><body><header><a href=/ class=title><h2>onseok</h2></a><nav><a href=/posts/>Posts</a>
+<a href=/tags/>Tags</a>
+<a href=/about/>About</a></nav></header><main><h1>Why Native Code Works on Android</h1><p><i><time datetime=2025-09-07>07 Sep, 2025</time></i></p><content><p>If you have been developing for Android long enough, you have probably encountered crashes that only occur on specific devices, or wondered &ldquo;how is this even possible?&rdquo; when calling C++ code via <code>System.loadLibrary("native-lib")</code>.</p><p>In this post, we will explore how Java/Kotlin code and C/C++ native code can work together on Android. The answer lies in the <strong>ABI (Application Binary Interface)</strong>.</p><blockquote><p>Note that Google Play has <a href="https://developer.android.com/google/play/requirements/64-bit?hl=ko">mandated 64-bit support</a>. All apps that include native code must provide a 64-bit version.</p></blockquote><h2 id=starting-with-a-simple-experiment>Starting with a Simple Experiment</h2><p>Have you ever seen code like this?</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// MainActivity.kt
+</span></span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>MainActivity</span> <span class=p>:</span> <span class=n>AppCompatActivity</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>companion</span> <span class=k>object</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>init</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nc>System</span><span class=p>.</span><span class=n>loadLibrary</span><span class=p>(</span><span class=s2>&#34;native-lib&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>external</span> <span class=k>fun</span> <span class=nf>stringFromJNI</span><span class=p>():</span> <span class=n>String</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreate</span><span class=p>(</span><span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>super</span><span class=p>.</span><span class=n>onCreate</span><span class=p>(</span><span class=n>savedInstanceState</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>text</span> <span class=p>=</span> <span class=n>stringFromJNI</span><span class=p>()</span>  <span class=c1>// Calling a C++ function!
+</span></span></span><span class=line><span class=cl>        <span class=nc>Log</span><span class=p>.</span><span class=n>d</span><span class=p>(</span><span class=s2>&#34;ABI&#34;</span><span class=p>,</span> <span class=n>text</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// native-lib.cpp
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;jni.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// JNIEXPORT: __attribute__((visibility(&#34;default&#34;))) - exposes the symbol externally
+</span></span></span><span class=line><span class=cl><span class=c1>// JNICALL: handles platform-specific calling conventions
+</span></span></span><span class=line><span class=cl><span class=k>extern</span> <span class=s>&#34;C&#34;</span> <span class=n>JNIEXPORT</span> <span class=n>jstring</span> <span class=n>JNICALL</span>
+</span></span><span class=line><span class=cl><span class=n>Java_com_example_myapp_MainActivity_stringFromJNI</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>JNIEnv</span><span class=o>*</span> <span class=n>env</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>jobject</span> <span class=cm>/* this */</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>hello</span> <span class=o>=</span> <span class=s>&#34;Hello from C++&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>env</span><span class=o>-&gt;</span><span class=n>NewStringUTF</span><span class=p>(</span><span class=n>hello</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>Kotlin code is calling a C++ function. How on earth is this possible?</p><p><strong>The answer lies in the ABI.</strong></p><h2 id=so-what-exactly-is-an-abi>So What Exactly Is an ABI?</h2><p>Let us start with something familiar. You have probably heard of <code>API (Application Programming Interface)</code>. In simple terms, it is a source-code-level contract that says &ldquo;call this function like this.&rdquo;</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// A contract at the API level
+</span></span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>calculateSum</span><span class=p>(</span><span class=n>a</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span> <span class=n>b</span><span class=p>:</span> <span class=n>Int</span><span class=p>):</span> <span class=n>Int</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>a</span> <span class=p>+</span> <span class=n>b</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>But what happens when this code gets compiled? The CPU has absolutely no knowledge of Kotlin or Java. It only understands machine code made up of 0s and 1s.</p><pre tabindex=0><code class=language-assembly data-lang=assembly>; Transformed into ARM64 assembly
+add x0, x0, x1   ; x0 = x0 + x1
+ret              ; return the value in register x0
+</code></pre><p>This raises some important questions:</p><ul><li>Which registers do the parameters <code>a</code> and <code>b</code> go into?</li><li>Where is the return value stored?</li><li>How is the stack aligned?</li></ul><p><strong>The ABI is what defines all of these rules.</strong></p><h2 id=why-do-different-devices-need-different-libraries>Why Do Different Devices Need Different Libraries?</h2><p>Here is an interesting experiment.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=kt>int</span> <span class=nf>add</span><span class=p>(</span><span class=kt>int</span> <span class=n>a</span><span class=p>,</span> <span class=kt>int</span> <span class=n>b</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>a</span> <span class=o>+</span> <span class=n>b</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>What happens when we compile this exact same addition function for different Android devices?</p><h3 id=arm32-armeabi-v7a---most-older-android-devices>ARM32 (armeabi-v7a) - Most older Android devices</h3><pre tabindex=0><code class=language-assembly data-lang=assembly>; ARM AAPCS: r0-r3 for argument passing, r4-r11 preserved, r12 scratch
+; 32-bit integer addition
+add r0, r0, r1   ; r0 = r0 + r1 (first argument + second argument)
+bx lr            ; return via lr (Link Register), r0 is the return value
+</code></pre><h3 id=arm64-arm64-v8a---most-current-android-smartphones>ARM64 (arm64-v8a) - Most current Android smartphones</h3><pre tabindex=0><code class=language-assembly data-lang=assembly>; AAPCS64: x0-x7 for arguments/return, x8 indirect result, x9-x15 temporaries
+; 32-bit int uses w registers (lower 32 bits of x registers)
+add w0, w0, w1   ; w0 = w0 + w1 (32-bit integer addition)
+ret              ; return to the address in x30 (lr), w0 is the return value
+</code></pre><h3 id=x86-32-bit---older-android-tablets-emulators>x86 (32-bit) - Older Android tablets, emulators</h3><pre tabindex=0><code class=language-assembly data-lang=assembly>; System V i386 ABI (cdecl): all arguments passed via the stack
+; Stack: [return address][first argument][second argument]...
+mov eax, [esp+4]  ; load first argument (a) into eax
+add eax, [esp+8]  ; add second argument (b)
+ret               ; return via eax, caller cleans up the stack
+</code></pre><h3 id=x86_64-64-bit---modern-android-emulators-chrome-os>x86_64 (64-bit) - Modern Android emulators, Chrome OS</h3><pre tabindex=0><code class=language-assembly data-lang=assembly>; System V AMD64 ABI: first 6 arguments passed via rdi, rsi, rdx, rcx, r8, r9
+; 32-bit integers use the lower 32 bits (edi, esi)
+add edi, esi     ; edi = edi + esi (32-bit addition)
+mov eax, edi     ; copy result to eax (return value)
+ret              ; return via the lower 32 bits of rax (eax)
+</code></pre><p>Remarkably, <strong>each CPU architecture calls functions in a completely different way</strong>!</p><ul><li><strong>ARM</strong>: Register-centric (uses r0-r3 or x0-x7)</li><li><strong>x86 (32-bit)</strong>: Stack-centric (all arguments via the stack)</li><li><strong>x86_64</strong>: Registers first (first 6 arguments via registers)</li></ul><p>This is exactly why you see folders like <code>lib/armeabi-v7a/</code>, <code>lib/arm64-v8a/</code>, <code>lib/x86/</code>, and <code>lib/x86_64/</code> inside an Android APK. Because the &ldquo;machine code&rdquo; and &ldquo;calling conventions&rdquo; understood by each CPU architecture are completely different, you need native libraries (.so files) compiled specifically for each one.</p><h2 id=androids-abis>Android&rsquo;s ABIs</h2><p>Android provides multiple ABIs to support a wide range of devices. Here is the current status:</p><table><thead><tr><th>ABI</th><th>Architecture</th><th>Status</th><th>Market Share</th></tr></thead><tbody><tr><td><strong>arm64-v8a</strong></td><td>64-bit ARM</td><td><strong>Required</strong></td><td>~95%</td></tr><tr><td><strong>armeabi-v7a</strong></td><td>32-bit ARM</td><td>Legacy support</td><td>~5%</td></tr><tr><td>x86_64</td><td>64-bit Intel</td><td>Emulator</td><td>&lt;1%</td></tr><tr><td><del>x86</del></td><td><del>32-bit Intel</del></td><td><strong>Deprecated</strong></td><td>-</td></tr></tbody></table><h3 id=1-armeabi-v7a-32-bit-arm>1. armeabi-v7a (32-bit ARM)</h3><p>A 32-bit ARM architecture still used to support legacy devices.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// Checking the characteristics of this ABI in code
+</span></span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>checkArmeabiV7a</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Key characteristics:
+</span></span></span><span class=line><span class=cl>    <span class=c1>// - 32-bit pointers (4 bytes)
+</span></span></span><span class=line><span class=cl>    <span class=c1>// - 16 general-purpose registers (r0-r15)
+</span></span></span><span class=line><span class=cl>    <span class=c1>// - VFPv3 floating-point support
+</span></span></span><span class=line><span class=cl>    <span class=c1>// - NEON SIMD instruction support
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>pointerSize</span> <span class=p>=</span> <span class=mi>4</span>  <span class=c1>// bytes
+</span></span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>maxMemory</span> <span class=p>=</span> <span class=mi>4_294_967_296L</span>  <span class=c1>// 4GB (2^32)
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>Actual memory layout (typical example)</p><pre tabindex=0><code>[Low Memory]
+0x00000000: Reserved
+0x08048000: Text Segment (code)
+0x10000000: Data Segment (global variables)
+0x40000000: Heap (dynamic allocation)
+0xBFFFFFFF: Stack (function calls)
+[High Memory]
+</code></pre><h3 id=2-arm64-v8a-64-bit-arm>2. arm64-v8a (64-bit ARM)</h3><p>The architecture used by the vast majority of modern Android devices today.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// Demonstrating the pointer size difference
+</span></span></span><span class=line><span class=cl><span class=k>struct</span> <span class=nc>VideoFrame</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>void</span><span class=o>*</span> <span class=n>buffer</span><span class=p>;</span>      <span class=c1>// 32-bit: 4 bytes, 64-bit: 8 bytes
+</span></span></span><span class=line><span class=cl>    <span class=n>size_t</span> <span class=n>size</span><span class=p>;</span>       <span class=c1>// 32-bit: 4 bytes, 64-bit: 8 bytes
+</span></span></span><span class=line><span class=cl>    <span class=kt>int64_t</span> <span class=n>timestamp</span><span class=p>;</span> <span class=c1>// 8 bytes on both
+</span></span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Size of this struct on 32-bit: 16 bytes
+</span></span></span><span class=line><span class=cl><span class=c1>// Size of this struct on 64-bit: 24 bytes!
+</span></span></span></code></pre></div><p>Why does this difference occur? It is because of <strong>padding</strong>.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// 32-bit memory alignment
+</span></span></span><span class=line><span class=cl><span class=k>struct</span> <span class=nc>VideoFrame_32</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>void</span><span class=o>*</span> <span class=n>buffer</span><span class=p>;</span>      <span class=c1>// bytes 0-3
+</span></span></span><span class=line><span class=cl>    <span class=n>size_t</span> <span class=n>size</span><span class=p>;</span>       <span class=c1>// bytes 4-7
+</span></span></span><span class=line><span class=cl>    <span class=kt>int64_t</span> <span class=n>timestamp</span><span class=p>;</span> <span class=c1>// bytes 8-15
+</span></span></span><span class=line><span class=cl><span class=p>};</span> <span class=c1>// Total: 16 bytes
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 64-bit memory alignment
+</span></span></span><span class=line><span class=cl><span class=k>struct</span> <span class=nc>VideoFrame_64</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>void</span><span class=o>*</span> <span class=n>buffer</span><span class=p>;</span>      <span class=c1>// bytes 0-7
+</span></span></span><span class=line><span class=cl>    <span class=n>size_t</span> <span class=n>size</span><span class=p>;</span>       <span class=c1>// bytes 8-15
+</span></span></span><span class=line><span class=cl>    <span class=kt>int64_t</span> <span class=n>timestamp</span><span class=p>;</span> <span class=c1>// bytes 16-23
+</span></span></span><span class=line><span class=cl><span class=p>};</span> <span class=c1>// Total: 24 bytes
+</span></span></span></code></pre></div><h3 id=3-x86--x86_64-intel-architecture>3. x86 / x86_64 (Intel Architecture)</h3><p>Primarily used in emulators and some tablets.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// What makes x86 special: stack-based calling conventions
+</span></span></span><span class=line><span class=cl><span class=k>external</span> <span class=k>fun</span> <span class=nf>processData</span><span class=p>(</span><span class=n>a</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span> <span class=n>b</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span> <span class=n>c</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span> <span class=n>d</span><span class=p>:</span> <span class=n>Int</span><span class=p>):</span> <span class=n>Int</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// ARM: first 4 arguments passed via registers
+</span></span></span><span class=line><span class=cl><span class=c1>// x86: all arguments passed via the stack (32-bit)
+</span></span></span><span class=line><span class=cl><span class=c1>// x86_64: first 6 arguments passed via registers
+</span></span></span></code></pre></div><h2 id=name-mangling>Name Mangling</h2><p>How does C++ support function overloading?</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// C++ code
+</span></span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Calculator</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=k>public</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>add</span><span class=p>(</span><span class=kt>int</span> <span class=n>a</span><span class=p>,</span> <span class=kt>int</span> <span class=n>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=kt>float</span> <span class=nf>add</span><span class=p>(</span><span class=kt>float</span> <span class=n>a</span><span class=p>,</span> <span class=kt>float</span> <span class=n>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=kt>double</span> <span class=nf>add</span><span class=p>(</span><span class=kt>double</span> <span class=n>a</span><span class=p>,</span> <span class=kt>double</span> <span class=n>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span></code></pre></div><p>The compiler uses <strong>Name Mangling</strong> to distinguish between these functions.</p><pre tabindex=0><code>// Mangled names (vary by compiler)
+_ZN10Calculator3addEii    // int add(int, int)
+_ZN10Calculator3addEff    // float add(float, float)
+_ZN10Calculator3addEdd    // double add(double, double)
+</code></pre><p>Breaking down each part:</p><ul><li><code>_Z</code>: Start of a C++ mangled name</li><li><code>N</code>: Start of a nested name</li><li><code>10Calculator</code>: 10-character class name &ldquo;Calculator&rdquo;</li><li><code>3add</code>: 3-character method name &ldquo;add&rdquo;</li><li><code>E</code>: End of nested name</li><li><code>ii/ff/dd</code>: Parameter types (int/float/double)</li></ul><p>This is exactly why JNI uses <code>extern "C"</code>.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// Preventing Name Mangling
+</span></span></span><span class=line><span class=cl><span class=k>extern</span> <span class=s>&#34;C&#34;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>JNIEXPORT</span> <span class=n>jstring</span> <span class=n>JNICALL</span>
+</span></span><span class=line><span class=cl>    <span class=nf>Java_com_example_MainActivity_getString</span><span class=p>(</span><span class=n>JNIEnv</span><span class=o>*</span> <span class=n>env</span><span class=p>,</span> <span class=n>jobject</span> <span class=n>obj</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Without extern &#34;C&#34;, this function name would be mangled
+</span></span></span><span class=line><span class=cl>        <span class=c1>// and Java would not be able to find it!
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=elf-and-the-system-v-abi>ELF and the System V ABI</h2><p>Android&rsquo;s native libraries follow the <strong>ELF (Executable and Linkable Format)</strong>. Let us analyze an actual <code>.so</code> file.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># Analyzing a .so file</span>
+</span></span><span class=line><span class=cl>$ readelf -h libnative-lib.so
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>ELF Header:
+</span></span><span class=line><span class=cl>  Magic:   7f <span class=m>45</span> 4c <span class=m>46</span> <span class=m>02</span> <span class=m>01</span> <span class=m>01</span> <span class=m>00</span>  <span class=c1># ELF signature</span>
+</span></span><span class=line><span class=cl>  Class:   ELF64                     <span class=c1># 64-bit</span>
+</span></span><span class=line><span class=cl>  Data:    2<span class=err>&#39;</span>s complement, little endian
+</span></span><span class=line><span class=cl>  Version: <span class=m>1</span> <span class=o>(</span>current<span class=o>)</span>
+</span></span><span class=line><span class=cl>  OS/ABI:  UNIX - System V           <span class=c1># System V ABI!</span>
+</span></span><span class=line><span class=cl>  Machine: AArch64                   <span class=c1># ARM64</span>
+</span></span></code></pre></div><p>ELF file structure</p><pre tabindex=0><code>+------------------+
+|   ELF Header     |  File type, architecture, entry point
++------------------+
+| Program Headers  |  Runtime segment information
++------------------+
+|     .text        |  Executable code
++------------------+
+|     .data        |  Initialized global variables
++------------------+
+|     .bss         |  Uninitialized global variables
++------------------+
+|    .dynamic     |  Dynamic linking information
++------------------+
+|    .symtab      |  Symbol table
++------------------+
+| Section Headers  |  Section metadata
++------------------+
+</code></pre><p>The System V ABI defines the standards for all of these:</p><ul><li>Data type sizes and alignment</li><li>Function calling conventions</li><li>Register usage rules</li><li>Stack frame layout</li><li>Exception handling mechanisms</li></ul><h2 id=in-practice-supporting-multiple-abis>In Practice: Supporting Multiple ABIs</h2><p>Let us look at how to support multiple ABIs in a real project.</p><h3 id=1-gradle-configuration>1. Gradle Configuration</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>defaultConfig</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>ndk</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Recommended: remove x86, prioritize 64-bit
+</span></span></span><span class=line><span class=cl>            <span class=n>abiFilters</span> <span class=s1>&#39;arm64-v8a&#39;</span><span class=o>,</span> <span class=s1>&#39;armeabi-v7a&#39;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Per-ABI APK splits (APK size optimization)
+</span></span></span><span class=line><span class=cl>    <span class=n>splits</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>abi</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>enable</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>            <span class=nf>reset</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=n>include</span> <span class=s1>&#39;armeabi-v7a&#39;</span><span class=o>,</span> <span class=s1>&#39;arm64-v8a&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=n>universalApk</span> <span class=kc>false</span>  <span class=c1>// Whether to generate an APK containing all ABIs
+</span></span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><h3 id=2-cmake-configuration>2. CMake Configuration</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-cmake data-lang=cmake><span class=line><span class=cl><span class=c># CMakeLists.txt
+</span></span></span><span class=line><span class=cl><span class=nb>cmake_minimum_required</span><span class=p>(</span><span class=s>VERSION</span> <span class=s>3.22.1</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>project</span><span class=p>(</span><span class=s2>&#34;native-lib&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=c># Use C++20 standard
+</span></span></span><span class=line><span class=cl><span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_STANDARD</span> <span class=s>20</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_STANDARD_REQUIRED</span> <span class=s>ON</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=c># Per-ABI optimization
+</span></span></span><span class=line><span class=cl><span class=nb>if</span><span class=p>(</span><span class=o>${</span><span class=nv>ANDROID_ABI</span><span class=o>}</span> <span class=s>STREQUAL</span> <span class=s2>&#34;arm64-v8a&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl>    <span class=c># ARM64: NEON mandatory, advanced optimizations
+</span></span></span><span class=line><span class=cl>    <span class=c># Note: +crypto may cause SIGILL on some older ARM64 SoCs (e.g. Snapdragon 410). Consider runtime feature detection.
+</span></span></span><span class=line><span class=cl>    <span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_FLAGS</span> <span class=s2>&#34;${CMAKE_CXX_FLAGS} -O3 -march=armv8-a+crc+crypto&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl>    <span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_FLAGS</span> <span class=s2>&#34;${CMAKE_CXX_FLAGS} -ftree-vectorize&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>elseif</span><span class=p>(</span><span class=o>${</span><span class=nv>ANDROID_ABI</span><span class=o>}</span> <span class=s>STREQUAL</span> <span class=s2>&#34;armeabi-v7a&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl>    <span class=c># ARM32: NEON optional, compatibility-focused
+</span></span></span><span class=line><span class=cl>    <span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_FLAGS</span> <span class=s2>&#34;${CMAKE_CXX_FLAGS} -O2 -mfpu=neon-vfpv4&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl>    <span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_FLAGS</span> <span class=s2>&#34;${CMAKE_CXX_FLAGS} -mfloat-abi=softfp&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>endif</span><span class=p>()</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=c># Security hardening
+</span></span></span><span class=line><span class=cl><span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_FLAGS</span> <span class=s2>&#34;${CMAKE_CXX_FLAGS} -fstack-protector-strong&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_CXX_FLAGS</span> <span class=s2>&#34;${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>set</span><span class=p>(</span><span class=s>CMAKE_SHARED_LINKER_FLAGS</span> <span class=s2>&#34;${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,relro -Wl,-z,now&#34;</span><span class=p>)</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=nb>add_library</span><span class=p>(</span><span class=s>native-lib</span> <span class=s>SHARED</span> <span class=s>native-lib.cpp</span><span class=p>)</span><span class=err>
+</span></span></span></code></pre></div><h3 id=3-runtime-abi-detection>3. Runtime ABI Detection</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>AbiManager</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>getCurrentAbi</span><span class=p>():</span> <span class=n>String</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nc>Build</span><span class=p>.</span><span class=n>SUPPORTED_ABIS</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>  <span class=c1>// Primary ABI
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>loadOptimizedLibrary</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>when</span> <span class=p>(</span><span class=n>getCurrentAbi</span><span class=p>())</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;arm64-v8a&#34;</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nc>System</span><span class=p>.</span><span class=n>loadLibrary</span><span class=p>(</span><span class=s2>&#34;native-lib-arm64&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=nc>Log</span><span class=p>.</span><span class=n>d</span><span class=p>(</span><span class=s2>&#34;ABI&#34;</span><span class=p>,</span> <span class=s2>&#34;Loaded 64-bit optimized library&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;armeabi-v7a&#34;</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nc>System</span><span class=p>.</span><span class=n>loadLibrary</span><span class=p>(</span><span class=s2>&#34;native-lib-arm32&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=nc>Log</span><span class=p>.</span><span class=n>d</span><span class=p>(</span><span class=s2>&#34;ABI&#34;</span><span class=p>,</span> <span class=s2>&#34;Loaded 32-bit library&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nc>System</span><span class=p>.</span><span class=n>loadLibrary</span><span class=p>(</span><span class=s2>&#34;native-lib&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=nc>Log</span><span class=p>.</span><span class=n>d</span><span class=p>(</span><span class=s2>&#34;ABI&#34;</span><span class=p>,</span> <span class=s2>&#34;Loaded default library&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>checkAbiCompatibility</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>primaryAbi</span> <span class=p>=</span> <span class=nc>Build</span><span class=p>.</span><span class=n>SUPPORTED_ABIS</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Available only on API 21+
+</span></span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>all32BitAbis</span> <span class=p>=</span> <span class=nc>Build</span><span class=p>.</span><span class=n>SUPPORTED_32_BIT_ABIS</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>all64BitAbis</span> <span class=p>=</span> <span class=nc>Build</span><span class=p>.</span><span class=n>SUPPORTED_64_BIT_ABIS</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nc>Log</span><span class=p>.</span><span class=n>d</span><span class=p>(</span><span class=s2>&#34;ABI&#34;</span><span class=p>,</span> <span class=s>&#34;&#34;&#34;
+</span></span></span><span class=line><span class=cl><span class=s>            Primary ABI: </span><span class=si>$primaryAbi</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>            32-bit ABIs: </span><span class=si>${all32BitAbis.joinToString()}</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>            64-bit ABIs: </span><span class=si>${all64BitAbis.joinToString()}</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>        &#34;&#34;&#34;</span><span class=p>.</span><span class=n>trimIndent</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=abi-specific-considerations>ABI-Specific Considerations</h2><h3 id=leveraging-neon-simd-arm>Leveraging NEON SIMD (ARM)</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#ifdef __ARM_NEON__
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;arm_neon.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>processAudio_NEON</span><span class=p>(</span><span class=kt>float</span><span class=o>*</span> <span class=n>samples</span><span class=p>,</span> <span class=kt>int</span> <span class=n>count</span><span class=p>,</span> <span class=kt>float</span> <span class=n>gain</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Process 4 elements in parallel (128-bit NEON registers)
+</span></span></span><span class=line><span class=cl>    <span class=c1>// Actual performance improvement: 1.5-3x (limited by memory bandwidth)
+</span></span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>count</span><span class=p>;</span> <span class=n>i</span> <span class=o>+=</span> <span class=mi>4</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Prefetch to reduce cache misses
+</span></span></span><span class=line><span class=cl>        <span class=n>__builtin_prefetch</span><span class=p>(</span><span class=o>&amp;</span><span class=n>samples</span><span class=p>[</span><span class=n>i</span> <span class=o>+</span> <span class=mi>16</span><span class=p>],</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>float32x4_t</span> <span class=n>vec</span> <span class=o>=</span> <span class=n>vld1q_f32</span><span class=p>(</span><span class=o>&amp;</span><span class=n>samples</span><span class=p>[</span><span class=n>i</span><span class=p>]);</span>  <span class=c1>// Load 4 elements
+</span></span></span><span class=line><span class=cl>        <span class=n>vec</span> <span class=o>=</span> <span class=n>vmulq_f32</span><span class=p>(</span><span class=n>vec</span><span class=p>,</span> <span class=n>vdupq_n_f32</span><span class=p>(</span><span class=n>gain</span><span class=p>));</span>   <span class=c1>// Multiply 4 simultaneously
+</span></span></span><span class=line><span class=cl>        <span class=n>vst1q_f32</span><span class=p>(</span><span class=o>&amp;</span><span class=n>samples</span><span class=p>[</span><span class=n>i</span><span class=p>],</span> <span class=n>vec</span><span class=p>);</span>               <span class=c1>// Store 4 elements
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>#else
+</span></span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>processAudio_Standard</span><span class=p>(</span><span class=kt>float</span><span class=o>*</span> <span class=n>samples</span><span class=p>,</span> <span class=kt>int</span> <span class=n>count</span><span class=p>,</span> <span class=kt>float</span> <span class=n>gain</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Standard processing
+</span></span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>count</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>samples</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>*=</span> <span class=n>gain</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>#endif
+</span></span></span></code></pre></div><h3 id=64-bit-optimization>64-bit Optimization</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// Taking advantage of 64-bit
+</span></span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>processLargeData</span><span class=p>(</span><span class=kt>uint8_t</span><span class=o>*</span> <span class=n>data</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>size</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#ifdef __LP64__  </span><span class=c1>// 64-bit environment
+</span></span></span><span class=line><span class=cl>        <span class=c1>// Utilize the larger address space
+</span></span></span><span class=line><span class=cl>        <span class=c1>// More registers available (ARM64: 31 64-bit general-purpose registers vs ARM32: 16)
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Process 8 bytes at a time (64-bit registers)
+</span></span></span><span class=line><span class=cl>        <span class=kt>uint64_t</span><span class=o>*</span> <span class=n>ptr</span> <span class=o>=</span> <span class=p>(</span><span class=kt>uint64_t</span><span class=o>*</span><span class=p>)</span><span class=n>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=n>size_t</span> <span class=n>count</span> <span class=o>=</span> <span class=n>size</span> <span class=o>/</span> <span class=mi>8</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=n>size_t</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>count</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>ptr</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>=</span> <span class=n>processChunk</span><span class=p>(</span><span class=n>ptr</span><span class=p>[</span><span class=n>i</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#else  </span><span class=c1>// 32-bit environment
+</span></span></span><span class=line><span class=cl>        <span class=c1>// Process 4 bytes at a time
+</span></span></span><span class=line><span class=cl>        <span class=kt>uint32_t</span><span class=o>*</span> <span class=n>ptr</span> <span class=o>=</span> <span class=p>(</span><span class=kt>uint32_t</span><span class=o>*</span><span class=p>)</span><span class=n>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=n>size_t</span> <span class=n>count</span> <span class=o>=</span> <span class=n>size</span> <span class=o>/</span> <span class=mi>4</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=n>size_t</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>count</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>ptr</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>=</span> <span class=n>processChunk</span><span class=p>(</span><span class=n>ptr</span><span class=p>[</span><span class=n>i</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#endif
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=debugging-in-practice>Debugging in Practice</h2><h3 id=1-unsatisfiedlinkerror>1. UnsatisfiedLinkError</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// A common error
+</span></span></span><span class=line><span class=cl><span class=n>java</span><span class=p>.</span><span class=n>lang</span><span class=p>.</span><span class=n>UnsatisfiedLinkError</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>dlopen</span> <span class=n>failed</span><span class=p>:</span> <span class=s2>&#34;/data/app/.../lib/arm/libnative.so&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=k>is</span> <span class=mi>32</span><span class=p>-</span><span class=n>bit</span> <span class=n>instead</span> <span class=n>of</span> <span class=mi>64</span><span class=p>-</span><span class=n>bit</span>
+</span></span></code></pre></div><p>Solution</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>NativeLibLoader</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>companion</span> <span class=k>object</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>loadLibrarySafely</span><span class=p>(</span><span class=n>libName</span><span class=p>:</span> <span class=n>String</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>try</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nc>System</span><span class=p>.</span><span class=n>loadLibrary</span><span class=p>(</span><span class=n>libName</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=n>e</span><span class=p>:</span> <span class=n>UnsatisfiedLinkError</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// Handle ABI mismatch
+</span></span></span><span class=line><span class=cl>                <span class=nc>Log</span><span class=p>.</span><span class=n>e</span><span class=p>(</span><span class=s2>&#34;ABI&#34;</span><span class=p>,</span> <span class=s2>&#34;Library load failed: </span><span class=si>${e.message}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=c1>// Note: This fallback pattern is illustrative. Android&#39;s built-in library loading
+</span></span></span><span class=line><span class=cl>                <span class=c1>// already handles ABI selection automatically via the lib/&lt;abi&gt;/ directory structure.
+</span></span></span><span class=line><span class=cl>                <span class=k>val</span> <span class=py>abi</span> <span class=p>=</span> <span class=nc>Build</span><span class=p>.</span><span class=n>SUPPORTED_ABIS</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>                <span class=nc>System</span><span class=p>.</span><span class=n>loadLibrary</span><span class=p>(</span><span class=s2>&#34;</span><span class=si>$libName</span><span class=s2>-</span><span class=si>$abi</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=2-crash-debugging>2. Crash Debugging</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// Collecting ABI information per architecture for crash debugging
+</span></span></span><span class=line><span class=cl><span class=k>extern</span> <span class=s>&#34;C&#34;</span> <span class=n>JNIEXPORT</span> <span class=kt>void</span> <span class=n>JNICALL</span>
+</span></span><span class=line><span class=cl><span class=n>Java_com_example_CrashHandler_collectAbiInfo</span><span class=p>(</span><span class=n>JNIEnv</span><span class=o>*</span> <span class=n>env</span><span class=p>,</span> <span class=n>jobject</span> <span class=n>obj</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#ifdef __arm__
+</span></span></span><span class=line><span class=cl>        <span class=n>__android_log_print</span><span class=p>(</span><span class=n>ANDROID_LOG_INFO</span><span class=p>,</span> <span class=s>&#34;ABI&#34;</span><span class=p>,</span> <span class=s>&#34;ARM32 detected&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#endif
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cp>#ifdef __aarch64__
+</span></span></span><span class=line><span class=cl>        <span class=n>__android_log_print</span><span class=p>(</span><span class=n>ANDROID_LOG_INFO</span><span class=p>,</span> <span class=s>&#34;ABI&#34;</span><span class=p>,</span> <span class=s>&#34;ARM64 detected&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#endif
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cp>#ifdef __i386__
+</span></span></span><span class=line><span class=cl>        <span class=n>__android_log_print</span><span class=p>(</span><span class=n>ANDROID_LOG_INFO</span><span class=p>,</span> <span class=s>&#34;ABI&#34;</span><span class=p>,</span> <span class=s>&#34;x86 detected&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#endif
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cp>#ifdef __x86_64__
+</span></span></span><span class=line><span class=cl>        <span class=n>__android_log_print</span><span class=p>(</span><span class=n>ANDROID_LOG_INFO</span><span class=p>,</span> <span class=s>&#34;ABI&#34;</span><span class=p>,</span> <span class=s>&#34;x86_64 detected&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=cp>#endif
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Check pointer size
+</span></span></span><span class=line><span class=cl>    <span class=n>__android_log_print</span><span class=p>(</span><span class=n>ANDROID_LOG_INFO</span><span class=p>,</span> <span class=s>&#34;ABI&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s>&#34;Pointer size: %zu bytes&#34;</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=kt>void</span><span class=o>*</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Check alignment
+</span></span></span><span class=line><span class=cl>    <span class=n>__android_log_print</span><span class=p>(</span><span class=n>ANDROID_LOG_INFO</span><span class=p>,</span> <span class=s>&#34;ABI&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s>&#34;Alignment of long: %zu&#34;</span><span class=p>,</span> <span class=k>alignof</span><span class=p>(</span><span class=kt>long</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=apk-size-optimization-strategies>APK Size Optimization Strategies</h2><h3 id=1-using-app-bundles>1. Using App Bundles</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=c1>// build.gradle
+</span></span></span><span class=line><span class=cl><span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>bundle</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>abi</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Exclude specific ABIs
+</span></span></span><span class=line><span class=cl>            <span class=n>enableSplit</span> <span class=o>=</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><p>When you use Google Play&rsquo;s App Bundle, only the ABI matching each user&rsquo;s device is selectively delivered. In practice, applying this approach reduces the install size of apps containing native libraries by an average of 20-35%, shortens download times, and saves users&rsquo; storage space.</p><h3 id=2-per-abi-resource-optimization>2. Per-ABI Resource Optimization</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>ResourceOptimizer</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>loadOptimizedResource</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>isArm64</span> <span class=p>=</span> <span class=nc>Build</span><span class=p>.</span><span class=n>SUPPORTED_ABIS</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>==</span> <span class=s2>&#34;arm64-v8a&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>isArm64</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 64-bit devices are typically high-performance
+</span></span></span><span class=line><span class=cl>            <span class=n>loadHighQualityAssets</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// 32-bit devices are likely lower-spec
+</span></span></span><span class=line><span class=cl>            <span class=n>loadOptimizedAssets</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=why-should-you-know-about-android-abi>Why Should You Know About Android ABI?</h2><p>Let us return to the original question. <strong>Why should we care about Android ABI?</strong></p><p><img src=unsatisfied-link-error.png alt></p><p>The truth is, most Android developers can build apps without knowing about ABI. But when you encounter an error like <code>UnsatisfiedLinkError: is 32-bit instead of 64-bit</code>, when you are asked to <strong>reduce your app&rsquo;s size</strong>, or when <strong>crashes occur only on specific devices</strong>, you will be stuck without ABI knowledge.</p><p>For example, imagine you are developing a camera filter app. You are using a C++-based filter engine for image processing, and suddenly the operations team reports that <strong>filters are slow only on a specific Samsung Galaxy device</strong>. After debugging, you discover the device was running in 32-bit mode and the native library had not been compiled with NEON SIMD support enabled for that ABI, causing it to process pixels one by one sequentially. (Note that NEON is available on ARMv7 via <code>#ifdef __ARM_NEON__</code> &ndash; the issue is not that 32-bit cannot use NEON, but that the build configuration must explicitly enable it.) Or what if you are building a <strong>voice recognition SDK</strong> and audio processing stutters on a low-cost Chinese tablet? It is most likely due to the limitations of the 32-bit x86 architecture.</p><p>The <strong>APK size issue</strong> is also something you cannot ignore. A universal APK that includes all ABIs bundles the native libraries for every architecture, making it larger. However, by leveraging Google Play&rsquo;s App Bundle, users only download the ABI matching their device, reducing data usage as well.</p><p>Above all, <strong>the moment you use native libraries</strong>, ABI becomes an unavoidable topic. To integrate libraries like OpenCV, FFmpeg, or TensorFlow Lite, you need <code>.so</code> files built for each ABI. Without understanding ABI, even basic questions like &ldquo;why do we need an arm64-v8a folder&rdquo; or &ldquo;why does the same library have different sizes&rdquo; become difficult to answer.</p><h2 id=wrapping-up>Wrapping Up</h2><p>ABI is the key mechanism that makes our apps work correctly behind the scenes. The ability of Java/Kotlin code to communicate with native code, and the ability of apps to run on a wide variety of devices, are all thanks to ABI.</p><p>It may seem complex at first, but once you understand it, you unlock a deeper level of optimization and problem-solving. This is especially true in fields that demand high performance, such as games, media processing, and AI inference, where ABI knowledge is essential.</p><p>The next time you configure <code>abiFilters</code> or write a JNI function, you will fully understand what is happening under the hood.</p><blockquote><p>Code ultimately runs on the CPU, and ABI defines the rules for that execution.</p></blockquote><h2 id=references>References</h2><h3 id=official-documentation>Official Documentation</h3><ul><li><a href=https://developer.android.com/ndk/guides/abis>Android ABI</a></li><li><a href=https://developer.android.com/ndk/guides>Getting Started with the NDK</a></li><li><a href=https://developer.android.com/guide/app-bundle>About Android App Bundles</a></li><li><a href=https://refspecs.linuxfoundation.org/elf/x86_64-abi-0.99.pdf>System V ABI Specification</a></li><li><a href=https://developer.arm.com/documentation>ARM Architecture Reference Manual</a></li><li><a href=https://refspecs.linuxfoundation.org/elf/elf.pdf>ELF Format Specification</a></li></ul></content><p><a href=https://onseok.github.io/tags/android/>#Android</a>
+<a href=https://onseok.github.io/tags/abi/>#Abi</a>
+<a href=https://onseok.github.io/tags/ndk/>#Ndk</a>
+<a href=https://onseok.github.io/tags/native/>#Native</a></p><hr><script src=https://giscus.app/client.js data-repo=onseok/onseok.github.io data-repo-id=R_kgDOOBxzWA data-category=Comments data-category-id=DIC_kwDOOBxzWM4CnfcD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=en crossorigin=anonymous async></script></main><footer></footer><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js integrity=sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js integrity=sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh crossorigin=anonymous onload='renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\\\(",right:"\\\\)",display:!1},{left:"\\\\[",right:"\\\\]",display:!0}],throwOnError:!1})'></script></body></html>

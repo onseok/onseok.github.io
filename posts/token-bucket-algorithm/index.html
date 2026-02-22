@@ -1,0 +1,411 @@
+<!doctype html><html lang=en-us><head><meta http-equiv=X-Clacks-Overhead content="GNU Terry Pratchett"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel="shortcut icon" href=https://onseok.github.io/favicon.png><title>Understanding the Token Bucket Algorithm | onseok</title><meta name=title content="Understanding the Token Bucket Algorithm"><meta name=description content="Implementing and analyzing the Token Bucket algorithm in Kotlin to reduce server load and achieve stable network communication in mobile apps."><meta name=keywords content="algorithm,rate-limiting,network,"><meta property="og:url" content="https://onseok.github.io/posts/token-bucket-algorithm/"><meta property="og:site_name" content="onseok"><meta property="og:title" content="Understanding the Token Bucket Algorithm"><meta property="og:description" content="Implementing and analyzing the Token Bucket algorithm in Kotlin to reduce server load and achieve stable network communication in mobile apps."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-09-02T00:00:00+00:00"><meta property="article:modified_time" content="2025-09-02T00:00:00+00:00"><meta property="article:tag" content="Algorithm"><meta property="article:tag" content="Rate-Limiting"><meta property="article:tag" content="Network"><meta name=twitter:card content="summary"><meta name=twitter:title content="Understanding the Token Bucket Algorithm"><meta name=twitter:description content="Implementing and analyzing the Token Bucket algorithm in Kotlin to reduce server load and achieve stable network communication in mobile apps."><meta itemprop=name content="Understanding the Token Bucket Algorithm"><meta itemprop=description content="Implementing and analyzing the Token Bucket algorithm in Kotlin to reduce server load and achieve stable network communication in mobile apps."><meta itemprop=datePublished content="2025-09-02T00:00:00+00:00"><meta itemprop=dateModified content="2025-09-02T00:00:00+00:00"><meta itemprop=wordCount content="1903"><meta itemprop=keywords content="Algorithm,Rate-Limiting,Network"><meta name=referrer content="no-referrer-when-downgrade"><style>:root{--width:720px;--font-main:Verdana, sans-serif;--font-secondary:Verdana, sans-serif;--font-scale:1em;--background-color:#fff;--heading-color:#222;--text-color:#444;--link-color:#3273dc;--visited-color:#8b6fcb;--blockquote-color:#222}@media(prefers-color-scheme:dark){:root{--background-color:#01242e;--heading-color:#eee;--text-color:#ddd;--link-color:#8cc2dd;--visited-color:#8b6fcb;--blockquote-color:#ccc}}body{font-family:var(--font-secondary);font-size:var(--font-scale);margin:auto;padding:20px;max-width:var(--width);text-align:left;background-color:var(--background-color);word-wrap:break-word;overflow-wrap:break-word;line-height:1.5;color:var(--text-color)}h1,h2,h3,h4,h5,h6{font-family:var(--font-main);color:var(--heading-color)}a{color:var(--link-color);cursor:pointer;text-decoration:none}a:hover{text-decoration:underline}nav a{margin-right:8px}strong,b{color:var(--heading-color)}button{margin:0;cursor:pointer}time{font-family:monospace;font-style:normal;font-size:15px}main{line-height:1.6}table{width:100%}hr{border:0;border-top:1px dashed}img{max-width:100%}code{font-family:monospace;padding:2px;border-radius:3px}blockquote{border-left:1px solid #999;color:var(--blockquote-color);padding-left:20px;font-style:italic}footer{padding:25px 0;text-align:center}.title:hover{text-decoration:none}.title h1{font-size:1.5em}.inline{width:auto!important}.highlight,.code{border-radius:3px;margin-block-start:1em;margin-block-end:1em;overflow-x:auto}ul.blog-posts{list-style-type:none;padding:unset}ul.blog-posts li{display:flex}ul.blog-posts li span{flex:0 0 130px}ul.blog-posts li a:visited{color:var(--visited-color)}</style><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css integrity=sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib crossorigin=anonymous><style>.bg{color:#f8f8f2;background-color:#272822}.chroma{color:#f8f8f2;background-color:#272822;-webkit-text-size-adjust:none}.chroma .err{color:#960050;background-color:#1e0010}.chroma .lnlinks{outline:none;text-decoration:none;color:inherit}.chroma .lntd{vertical-align:top;padding:0;margin:0;border:0}.chroma .lntable{border-spacing:0;padding:0;margin:0;border:0}.chroma .hl{background-color:#3c3d38}.chroma .lnt{white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f}.chroma .ln{white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f}.chroma .line{display:flex}.chroma .k{color:#66d9ef}.chroma .kc{color:#66d9ef}.chroma .kd{color:#66d9ef}.chroma .kn{color:#f92672}.chroma .kp{color:#66d9ef}.chroma .kr{color:#66d9ef}.chroma .kt{color:#66d9ef}.chroma .na{color:#a6e22e}.chroma .nc{color:#a6e22e}.chroma .no{color:#66d9ef}.chroma .nd{color:#a6e22e}.chroma .ne{color:#a6e22e}.chroma .nx{color:#a6e22e}.chroma .nt{color:#f92672}.chroma .nf{color:#a6e22e}.chroma .fm{color:#a6e22e}.chroma .l{color:#ae81ff}.chroma .ld{color:#e6db74}.chroma .s{color:#e6db74}.chroma .sa{color:#e6db74}.chroma .sb{color:#e6db74}.chroma .sc{color:#e6db74}.chroma .dl{color:#e6db74}.chroma .sd{color:#e6db74}.chroma .s2{color:#e6db74}.chroma .se{color:#ae81ff}.chroma .sh{color:#e6db74}.chroma .si{color:#e6db74}.chroma .sx{color:#e6db74}.chroma .sr{color:#e6db74}.chroma .s1{color:#e6db74}.chroma .ss{color:#e6db74}.chroma .m{color:#ae81ff}.chroma .mb{color:#ae81ff}.chroma .mf{color:#ae81ff}.chroma .mh{color:#ae81ff}.chroma .mi{color:#ae81ff}.chroma .il{color:#ae81ff}.chroma .mo{color:#ae81ff}.chroma .o{color:#f92672}.chroma .ow{color:#f92672}.chroma .c{color:#75715e}.chroma .ch{color:#75715e}.chroma .cm{color:#75715e}.chroma .c1{color:#75715e}.chroma .cs{color:#75715e}.chroma .cp{color:#75715e}.chroma .cpf{color:#75715e}.chroma .gd{color:#f92672}.chroma .ge{font-style:italic}.chroma .gi{color:#a6e22e}.chroma .gs{font-weight:700}.chroma .gu{color:#75715e}</style><style>.highlight pre{padding:1em;border-radius:6px;font-size:.875em;line-height:1.5}.highlight{background:#272822;border-radius:6px}@media(prefers-color-scheme:dark){.highlight{background:#1a1a2e}.chroma{background-color:#1a1a2e}}code:not(pre code){background:rgba(175,184,193,.2);padding:.2em .4em;border-radius:4px;font-size:.875em}@media(prefers-color-scheme:dark){code:not(pre code){background:rgba(240,246,252,.15)}}table{border-collapse:collapse;width:100%;margin:1.5em 0;font-size:.9em}th,td{border:1px solid #ddd;padding:.6em .8em;text-align:left}th{background:rgba(0,0,0,5%);font-weight:600}@media(prefers-color-scheme:dark){th,td{border-color:#444}th{background:rgba(255,255,255,8%)}}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}blockquote{margin:1.5em 0;padding:.5em 1.2em;border-left-width:3px;border-left-color:var(--link-color)}content img,article img{border-radius:4px;margin:1em 0}</style></head><body><header><a href=/ class=title><h2>onseok</h2></a><nav><a href=/posts/>Posts</a>
+<a href=/tags/>Tags</a>
+<a href=/about/>About</a></nav></header><main><h1>Understanding the Token Bucket Algorithm</h1><p><i><time datetime=2025-09-02>02 Sep, 2025</time></i></p><content><p>In Android development, you frequently encounter situations where network requests need to be properly controlled. Common examples include users rapidly tapping a button, requesting numerous images while scrolling, or excessive background synchronization.</p><p>In this post, we take a deep dive into the <strong>Token Bucket</strong> algorithm, a core solution for these problems. In particular, we will focus on implementing it in Kotlin and exploring practical ways to use it in an Android environment.</p><h2 id=core-principles-of-the-token-bucket-algorithm>Core Principles of the Token Bucket Algorithm</h2><p>Token Bucket is a widely used algorithm in network traffic shaping. The basic principle works as follows:</p><p><img src=token_bucket_algorithm.png alt="Token Bucket Concept Diagram"></p><ol><li><strong>Token Bucket</strong>: Tokens are stored in a bucket with a fixed capacity</li><li><strong>Token Generation</strong>: Tokens are generated at a constant rate and added to the bucket</li><li><strong>Request Processing</strong>: When a request arrives, it consumes tokens to be processed</li><li><strong>Burst Allowance</strong>: If the bucket has enough tokens, it can handle a sudden burst of requests</li></ol><p>The greatest advantage of this algorithm is that it <strong>limits the average processing rate while flexibly handling burst traffic</strong>. This aligns well with mobile app usage patterns.</p><h2 id=implementing-a-basic-token-bucket-in-kotlin>Implementing a Basic Token Bucket in Kotlin</h2><p>Let us start by implementing the most basic form of a Token Bucket. This implementation accounts for thread-safety.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>import</span> <span class=nn>java.util.concurrent.atomic.AtomicLong</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlin.math.min</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>TokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>capacity</span><span class=p>:</span> <span class=n>Long</span><span class=p>,</span>      <span class=c1>// Maximum bucket capacity
+</span></span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>refillRate</span><span class=p>:</span> <span class=n>Double</span><span class=p>,</span>   <span class=c1>// Tokens refilled per second
+</span></span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>refillPeriodMillis</span><span class=p>:</span> <span class=n>Long</span> <span class=p>=</span> <span class=mi>1000</span>  <span class=c1>// Refill period (default 1 second)
+</span></span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>tokens</span> <span class=p>=</span> <span class=n>AtomicLong</span><span class=p>(</span><span class=n>capacity</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>lastRefillTimestamp</span> <span class=p>=</span> <span class=n>AtomicLong</span><span class=p>(</span><span class=nc>System</span><span class=p>.</span><span class=n>nanoTime</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * Consume tokens and return whether the request is allowed
+</span></span></span><span class=line><span class=cl><span class=cm>     * @param numTokens Number of tokens to consume
+</span></span></span><span class=line><span class=cl><span class=cm>     * @return Whether the request is allowed
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>tryConsume</span><span class=p>(</span><span class=n>numTokens</span><span class=p>:</span> <span class=n>Long</span> <span class=p>=</span> <span class=mi>1</span><span class=p>):</span> <span class=n>Boolean</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>refill</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>tokens</span><span class=p>.</span><span class=n>updateAndGet</span> <span class=p>{</span> <span class=n>current</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>current</span> <span class=o>&gt;=</span> <span class=n>numTokens</span><span class=p>)</span> <span class=n>current</span> <span class=p>-</span> <span class=n>numTokens</span> <span class=k>else</span> <span class=n>current</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=o>&gt;=</span> <span class=n>numTokens</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * Refill tokens based on elapsed time
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>fun</span> <span class=nf>refill</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>now</span> <span class=p>=</span> <span class=nc>System</span><span class=p>.</span><span class=n>nanoTime</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>lastRefill</span> <span class=p>=</span> <span class=n>lastRefillTimestamp</span><span class=p>.</span><span class=k>get</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>elapsedNanos</span> <span class=p>=</span> <span class=n>now</span> <span class=p>-</span> <span class=n>lastRefill</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>elapsedNanos</span> <span class=p>&gt;</span> <span class=n>refillPeriodMillis</span> <span class=p>*</span> <span class=mi>1_000_000</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>elapsedPeriods</span> <span class=p>=</span> <span class=n>elapsedNanos</span> <span class=p>/</span> <span class=p>(</span><span class=n>refillPeriodMillis</span> <span class=p>*</span> <span class=mi>1_000_000</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>tokensToAdd</span> <span class=p>=</span> <span class=p>(</span><span class=n>elapsedPeriods</span> <span class=p>*</span> <span class=n>refillRate</span><span class=p>).</span><span class=n>toLong</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>tokensToAdd</span> <span class=p>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>tokens</span><span class=p>.</span><span class=n>updateAndGet</span> <span class=p>{</span> <span class=n>current</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=n>min</span><span class=p>(</span><span class=n>capacity</span><span class=p>,</span> <span class=n>current</span> <span class=p>+</span> <span class=n>tokensToAdd</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span>
+</span></span><span class=line><span class=cl>                <span class=n>lastRefillTimestamp</span><span class=p>.</span><span class=k>set</span><span class=p>(</span><span class=n>now</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * Query the number of currently available tokens
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>availableTokens</span><span class=p>():</span> <span class=n>Long</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>refill</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>tokens</span><span class=p>.</span><span class=k>get</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>The key to this implementation is the lock-free concurrency control using <code>AtomicLong</code>. Thread-safety is essential in Android apps because network requests can originate from multiple threads simultaneously.</p><h2 id=an-android-optimized-implementation>An Android-Optimized Implementation</h2><p>Real-world Android apps require more sophisticated control. Here is an approach that works with coroutines:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlinx.coroutines.*</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlinx.coroutines.channels.Channel</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlinx.coroutines.flow.*</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>java.util.concurrent.atomic.AtomicReference</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlin.math.min</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>AdvancedTokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>capacity</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>refillRate</span><span class=p>:</span> <span class=n>Double</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Note: GlobalScope is used here for simplicity. In production Android code, use a lifecycle-aware scope.
+</span></span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>scope</span><span class=p>:</span> <span class=n>CoroutineScope</span> <span class=p>=</span> <span class=n>GlobalScope</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>data</span> <span class=k>class</span> <span class=nc>BucketState</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>tokens</span><span class=p>:</span> <span class=n>Double</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>lastRefillTime</span><span class=p>:</span> <span class=n>Long</span> <span class=p>=</span> <span class=nc>System</span><span class=p>.</span><span class=n>nanoTime</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>state</span> <span class=p>=</span> <span class=n>AtomicReference</span><span class=p>(</span><span class=n>BucketState</span><span class=p>(</span><span class=n>capacity</span><span class=p>.</span><span class=n>toDouble</span><span class=p>()))</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>waitingRequests</span> <span class=p>=</span> <span class=n>Channel</span><span class=p>&lt;</span><span class=n>CompletableDeferred</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;&gt;(</span><span class=nc>Channel</span><span class=p>.</span><span class=n>UNLIMITED</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>init</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Periodically refill tokens and process waiting requests in the background
+</span></span></span><span class=line><span class=cl>        <span class=n>scope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>while</span> <span class=p>(</span><span class=n>isActive</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>delay</span><span class=p>(</span><span class=mi>100</span><span class=p>)</span> <span class=c1>// Check every 100ms
+</span></span></span><span class=line><span class=cl>                <span class=n>refillTokens</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>                <span class=n>processWaitingRequests</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * Non-blocking attempt to consume tokens
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>tryConsume</span><span class=p>(</span><span class=n>tokens</span><span class=p>:</span> <span class=n>Int</span> <span class=p>=</span> <span class=mi>1</span><span class=p>):</span> <span class=n>Boolean</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>while</span> <span class=p>(</span><span class=k>true</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>current</span> <span class=p>=</span> <span class=n>state</span><span class=p>.</span><span class=k>get</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>now</span> <span class=p>=</span> <span class=nc>System</span><span class=p>.</span><span class=n>nanoTime</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>newState</span> <span class=p>=</span> <span class=n>calculateNewState</span><span class=p>(</span><span class=n>current</span><span class=p>,</span> <span class=n>now</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>newState</span><span class=p>.</span><span class=n>tokens</span> <span class=o>&gt;=</span> <span class=n>tokens</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>val</span> <span class=py>consumedState</span> <span class=p>=</span> <span class=n>newState</span><span class=p>.</span><span class=n>copy</span><span class=p>(</span><span class=n>tokens</span> <span class=p>=</span> <span class=n>newState</span><span class=p>.</span><span class=n>tokens</span> <span class=p>-</span> <span class=n>tokens</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=k>if</span> <span class=p>(</span><span class=n>state</span><span class=p>.</span><span class=n>compareAndSet</span><span class=p>(</span><span class=n>current</span><span class=p>,</span> <span class=n>consumedState</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=k>true</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=k>false</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * Wait until tokens become available (suspend function)
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span>
+</span></span><span class=line><span class=cl>    <span class=k>suspend</span> <span class=k>fun</span> <span class=nf>consume</span><span class=p>(</span><span class=n>tokens</span><span class=p>:</span> <span class=n>Int</span> <span class=p>=</span> <span class=mi>1</span><span class=p>,</span> <span class=n>timeoutMillis</span><span class=p>:</span> <span class=n>Long</span> <span class=p>=</span> <span class=mi>5000</span><span class=p>):</span> <span class=n>Boolean</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Try immediately first
+</span></span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>tryConsume</span><span class=p>(</span><span class=n>tokens</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=k>true</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Register a waiting request
+</span></span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>withTimeoutOrNull</span><span class=p>(</span><span class=n>timeoutMillis</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>deferred</span> <span class=p>=</span> <span class=n>CompletableDeferred</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;()</span>
+</span></span><span class=line><span class=cl>            <span class=n>waitingRequests</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>deferred</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>deferred</span><span class=p>.</span><span class=n>await</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=o>?:</span> <span class=k>false</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>fun</span> <span class=nf>calculateNewState</span><span class=p>(</span><span class=n>current</span><span class=p>:</span> <span class=n>BucketState</span><span class=p>,</span> <span class=n>now</span><span class=p>:</span> <span class=n>Long</span><span class=p>):</span> <span class=n>BucketState</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>elapsedSeconds</span> <span class=p>=</span> <span class=p>(</span><span class=n>now</span> <span class=p>-</span> <span class=n>current</span><span class=p>.</span><span class=n>lastRefillTime</span><span class=p>)</span> <span class=p>/</span> <span class=mf>1_000_000_000.0</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>tokensToAdd</span> <span class=p>=</span> <span class=n>elapsedSeconds</span> <span class=p>*</span> <span class=n>refillRate</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>newTokens</span> <span class=p>=</span> <span class=n>min</span><span class=p>(</span><span class=n>capacity</span><span class=p>.</span><span class=n>toDouble</span><span class=p>(),</span> <span class=n>current</span><span class=p>.</span><span class=n>tokens</span> <span class=p>+</span> <span class=n>tokensToAdd</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>BucketState</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>tokens</span> <span class=p>=</span> <span class=n>newTokens</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>lastRefillTime</span> <span class=p>=</span> <span class=k>if</span> <span class=p>(</span><span class=n>tokensToAdd</span> <span class=p>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=n>now</span> <span class=k>else</span> <span class=n>current</span><span class=p>.</span><span class=n>lastRefillTime</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>fun</span> <span class=nf>refillTokens</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>while</span> <span class=p>(</span><span class=k>true</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>current</span> <span class=p>=</span> <span class=n>state</span><span class=p>.</span><span class=k>get</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>now</span> <span class=p>=</span> <span class=nc>System</span><span class=p>.</span><span class=n>nanoTime</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>newState</span> <span class=p>=</span> <span class=n>calculateNewState</span><span class=p>(</span><span class=n>current</span><span class=p>,</span> <span class=n>now</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>state</span><span class=p>.</span><span class=n>compareAndSet</span><span class=p>(</span><span class=n>current</span><span class=p>,</span> <span class=n>newState</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Note: This is conceptual pseudocode. Channel does not expose a public isEmpty property.
+</span></span></span><span class=line><span class=cl>    <span class=c1>// In practice, use tryReceive() in a loop and break when no elements are available.
+</span></span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>suspend</span> <span class=k>fun</span> <span class=nf>processWaitingRequests</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>while</span> <span class=p>(</span><span class=k>true</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>request</span> <span class=p>=</span> <span class=n>waitingRequests</span><span class=p>.</span><span class=n>tryReceive</span><span class=p>().</span><span class=n>getOrNull</span><span class=p>()</span> <span class=o>?:</span> <span class=k>break</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>tryConsume</span><span class=p>())</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>request</span><span class=p>.</span><span class=n>complete</span><span class=p>(</span><span class=k>true</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// Re-add to the waiting queue
+</span></span></span><span class=line><span class=cl>                <span class=n>waitingRequests</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>request</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>This implementation manages tokens asynchronously using coroutines and efficiently processes waiting requests.</p><h2 id=practical-use-cases-in-android-apps>Practical Use Cases in Android Apps</h2><h3 id=1-integration-with-a-retrofit-interceptor>1. Integration with a Retrofit Interceptor</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>RateLimitInterceptor</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>tokenBucket</span><span class=p>:</span> <span class=n>TokenBucket</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>:</span> <span class=n>Interceptor</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>intercept</span><span class=p>(</span><span class=n>chain</span><span class=p>:</span> <span class=nc>Interceptor</span><span class=p>.</span><span class=n>Chain</span><span class=p>):</span> <span class=n>Response</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Apply different weights per API endpoint
+</span></span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>request</span> <span class=p>=</span> <span class=n>chain</span><span class=p>.</span><span class=n>request</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>weight</span> <span class=p>=</span> <span class=k>when</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>request</span><span class=p>.</span><span class=n>url</span><span class=p>.</span><span class=n>encodedPath</span><span class=p>.</span><span class=n>contains</span><span class=p>(</span><span class=s2>&#34;/upload&#34;</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=mi>10</span>  <span class=c1>// Uploads cost 10 tokens
+</span></span></span><span class=line><span class=cl>            <span class=n>request</span><span class=p>.</span><span class=n>url</span><span class=p>.</span><span class=n>encodedPath</span><span class=p>.</span><span class=n>contains</span><span class=p>(</span><span class=s2>&#34;/search&#34;</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=mi>3</span>   <span class=c1>// Searches cost 3 tokens
+</span></span></span><span class=line><span class=cl>            <span class=k>else</span> <span class=o>-&gt;</span> <span class=mi>1</span>  <span class=c1>// Default: 1 token
+</span></span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Return 429 error if insufficient tokens
+</span></span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(!</span><span class=n>tokenBucket</span><span class=p>.</span><span class=n>tryConsume</span><span class=p>(</span><span class=n>weight</span><span class=p>.</span><span class=n>toLong</span><span class=p>()))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nc>Response</span><span class=p>.</span><span class=n>Builder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>code</span><span class=p>(</span><span class=mi>429</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>message</span><span class=p>(</span><span class=s2>&#34;Too Many Requests&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>protocol</span><span class=p>(</span><span class=nc>Protocol</span><span class=p>.</span><span class=n>HTTP_1_1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>request</span><span class=p>(</span><span class=n>request</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>build</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>chain</span><span class=p>.</span><span class=n>proceed</span><span class=p>(</span><span class=n>request</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Retrofit configuration
+</span></span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>retrofit</span> <span class=p>=</span> <span class=nc>Retrofit</span><span class=p>.</span><span class=n>Builder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>baseUrl</span><span class=p>(</span><span class=s2>&#34;https://api.example.com/&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>client</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=nc>OkHttpClient</span><span class=p>.</span><span class=n>Builder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>addInterceptor</span><span class=p>(</span><span class=n>RateLimitInterceptor</span><span class=p>(</span><span class=n>tokenBucket</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>build</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>build</span><span class=p>()</span>
+</span></span></code></pre></div><h3 id=2-integration-with-an-image-loading-library>2. Integration with an Image Loading Library</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>RateLimitedImageLoader</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>context</span><span class=p>:</span> <span class=n>Context</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>tokenBucket</span><span class=p>:</span> <span class=n>AdvancedTokenBucket</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>imageLoader</span> <span class=p>=</span> <span class=nc>ImageLoader</span><span class=p>.</span><span class=n>Builder</span><span class=p>(</span><span class=n>context</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=n>components</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>add</span><span class=p>(</span><span class=nc>RateLimitFetcher</span><span class=p>.</span><span class=n>Factory</span><span class=p>(</span><span class=n>tokenBucket</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>.</span><span class=n>build</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>suspend</span> <span class=k>fun</span> <span class=nf>loadImage</span><span class=p>(</span><span class=n>url</span><span class=p>:</span> <span class=n>String</span><span class=p>):</span> <span class=n>Drawable</span><span class=p>?</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>request</span> <span class=p>=</span> <span class=nc>ImageRequest</span><span class=p>.</span><span class=n>Builder</span><span class=p>(</span><span class=n>context</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=k>data</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>build</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=k>when</span> <span class=p>(</span><span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>imageLoader</span><span class=p>.</span><span class=n>execute</span><span class=p>(</span><span class=n>request</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>is</span> <span class=n>SuccessResult</span> <span class=o>-&gt;</span> <span class=n>result</span><span class=p>.</span><span class=n>drawable</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span> <span class=o>-&gt;</span> <span class=k>null</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>RateLimitFetcher</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>tokenBucket</span><span class=p>:</span> <span class=n>AdvancedTokenBucket</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>wrapped</span><span class=p>:</span> <span class=n>Fetcher</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>:</span> <span class=n>Fetcher</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>suspend</span> <span class=k>fun</span> <span class=nf>fetch</span><span class=p>():</span> <span class=n>FetchResult</span><span class=p>?</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Consume a token before loading the image (with timeout)
+</span></span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(!</span><span class=n>tokenBucket</span><span class=p>.</span><span class=n>consume</span><span class=p>(</span><span class=n>tokens</span> <span class=p>=</span> <span class=mi>1</span><span class=p>,</span> <span class=n>timeoutMillis</span> <span class=p>=</span> <span class=mi>3000</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// Note: Simplified for illustration. A real OkHttp Response.Builder requires
+</span></span></span><span class=line><span class=cl>            <span class=c1>// .request(request) and .protocol(Protocol.HTTP_1_1) as mandatory fields.
+</span></span></span><span class=line><span class=cl>            <span class=k>throw</span> <span class=n>HttpException</span><span class=p>(</span><span class=nc>Response</span><span class=p>.</span><span class=n>Builder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>code</span><span class=p>(</span><span class=mi>429</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>message</span><span class=p>(</span><span class=s2>&#34;Rate limit exceeded&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>.</span><span class=n>build</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>wrapped</span><span class=p>.</span><span class=n>fetch</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=token-bucket-in-a-distributed-environment>Token Bucket in a Distributed Environment</h2><p>When a mobile app communicates with multiple servers, or when server-side rate limiting is needed, a distributed Token Bucket can be implemented using Redis.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>DistributedTokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>redisClient</span><span class=p>:</span> <span class=n>RedisClient</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>key</span><span class=p>:</span> <span class=n>String</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>capacity</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>refillRate</span><span class=p>:</span> <span class=n>Double</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Lua script ensures atomic operations
+</span></span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>consumeScript</span> <span class=p>=</span> <span class=s>&#34;&#34;&#34;
+</span></span></span><span class=line><span class=cl><span class=s>        local key = KEYS[1]
+</span></span></span><span class=line><span class=cl><span class=s>        local capacity = tonumber(ARGV[1])
+</span></span></span><span class=line><span class=cl><span class=s>        local rate = tonumber(ARGV[2])
+</span></span></span><span class=line><span class=cl><span class=s>        local now = tonumber(ARGV[3])
+</span></span></span><span class=line><span class=cl><span class=s>        local requested = tonumber(ARGV[4])
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>        local bucket = redis.call(&#39;HMGET&#39;, key, &#39;tokens&#39;, &#39;last_refill&#39;)
+</span></span></span><span class=line><span class=cl><span class=s>        local tokens = tonumber(bucket[1]) or capacity
+</span></span></span><span class=line><span class=cl><span class=s>        local last_refill = tonumber(bucket[2]) or now
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>        -- Calculate token refill
+</span></span></span><span class=line><span class=cl><span class=s>        local elapsed = math.max(0, now - last_refill)
+</span></span></span><span class=line><span class=cl><span class=s>        local refilled = math.min(capacity, tokens + (elapsed * rate))
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>        if refilled &gt;= requested then
+</span></span></span><span class=line><span class=cl><span class=s>            -- Consume tokens
+</span></span></span><span class=line><span class=cl><span class=s>            redis.call(&#39;HMSET&#39;, key,
+</span></span></span><span class=line><span class=cl><span class=s>                &#39;tokens&#39;, refilled - requested,
+</span></span></span><span class=line><span class=cl><span class=s>                &#39;last_refill&#39;, now)
+</span></span></span><span class=line><span class=cl><span class=s>            redis.call(&#39;EXPIRE&#39;, key, 86400)  -- 24-hour TTL
+</span></span></span><span class=line><span class=cl><span class=s>            return 1
+</span></span></span><span class=line><span class=cl><span class=s>        else
+</span></span></span><span class=line><span class=cl><span class=s>            -- Insufficient tokens
+</span></span></span><span class=line><span class=cl><span class=s>            if elapsed &gt; 0 then
+</span></span></span><span class=line><span class=cl><span class=s>                redis.call(&#39;HMSET&#39;, key,
+</span></span></span><span class=line><span class=cl><span class=s>                    &#39;tokens&#39;, refilled,
+</span></span></span><span class=line><span class=cl><span class=s>                    &#39;last_refill&#39;, now)
+</span></span></span><span class=line><span class=cl><span class=s>            end
+</span></span></span><span class=line><span class=cl><span class=s>            return 0
+</span></span></span><span class=line><span class=cl><span class=s>        end
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;&#34;&#34;</span><span class=p>.</span><span class=n>trimIndent</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>suspend</span> <span class=k>fun</span> <span class=nf>tryConsume</span><span class=p>(</span><span class=n>tokens</span><span class=p>:</span> <span class=n>Int</span> <span class=p>=</span> <span class=mi>1</span><span class=p>):</span> <span class=n>Boolean</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>redisClient</span><span class=p>.</span><span class=n>eval</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>script</span> <span class=p>=</span> <span class=n>consumeScript</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>keys</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span><span class=n>key</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>args</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>capacity</span><span class=p>.</span><span class=n>toString</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>                <span class=n>refillRate</span><span class=p>.</span><span class=n>toString</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>                <span class=p>(</span><span class=nc>System</span><span class=p>.</span><span class=n>currentTimeMillis</span><span class=p>()</span> <span class=p>/</span> <span class=mf>1000.0</span><span class=p>).</span><span class=n>toString</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>                <span class=n>tokens</span><span class=p>.</span><span class=n>toString</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>result</span> <span class=o>==</span> <span class=mi>1L</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=adaptive-rate-limiting>Adaptive Rate Limiting</h2><p>An adaptive Token Bucket that dynamically adjusts the rate based on network conditions or server response times can also be implemented.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>AdaptiveTokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>initialCapacity</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>minRate</span><span class=p>:</span> <span class=n>Double</span> <span class=p>=</span> <span class=mf>1.0</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>maxRate</span><span class=p>:</span> <span class=n>Double</span> <span class=p>=</span> <span class=mf>100.0</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>var</span> <span class=py>currentRate</span> <span class=p>=</span> <span class=n>minRate</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>var</span> <span class=py>tokenBucket</span> <span class=p>=</span> <span class=n>TokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>capacity</span> <span class=p>=</span> <span class=n>initialCapacity</span><span class=p>.</span><span class=n>toLong</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>        <span class=n>refillRate</span> <span class=p>=</span> <span class=n>currentRate</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Network performance metrics
+</span></span></span><span class=line><span class=cl>    <span class=c1>// CircularFifoQueue is from Apache Commons Collections
+</span></span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>latencyWindow</span> <span class=p>=</span> <span class=n>CircularFifoQueue</span><span class=p>&lt;</span><span class=n>Long</span><span class=p>&gt;(</span><span class=mi>100</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>errorWindow</span> <span class=p>=</span> <span class=n>CircularFifoQueue</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;(</span><span class=mi>100</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>recordLatency</span><span class=p>(</span><span class=n>latencyMs</span><span class=p>:</span> <span class=n>Long</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>latencyWindow</span><span class=p>.</span><span class=n>add</span><span class=p>(</span><span class=n>latencyMs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>adjustRateBasedOnPerformance</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>recordResult</span><span class=p>(</span><span class=n>success</span><span class=p>:</span> <span class=n>Boolean</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>errorWindow</span><span class=p>.</span><span class=n>add</span><span class=p>(</span><span class=n>success</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>adjustRateBasedOnPerformance</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>fun</span> <span class=nf>adjustRateBasedOnPerformance</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>errorWindow</span><span class=p>.</span><span class=n>isEmpty</span><span class=p>())</span> <span class=k>return</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>avgLatency</span> <span class=p>=</span> <span class=n>latencyWindow</span><span class=p>.</span><span class=n>average</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>successRate</span> <span class=p>=</span> <span class=n>errorWindow</span><span class=p>.</span><span class=n>count</span> <span class=p>{</span> <span class=k>it</span> <span class=p>}</span> <span class=p>/</span> <span class=n>errorWindow</span><span class=p>.</span><span class=n>size</span><span class=p>.</span><span class=n>toDouble</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Adjust rate based on network conditions
+</span></span></span><span class=line><span class=cl>        <span class=n>currentRate</span> <span class=p>=</span> <span class=k>when</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>avgLatency</span> <span class=p>&lt;</span> <span class=mi>100</span> <span class=o>&amp;&amp;</span> <span class=n>successRate</span> <span class=p>&gt;</span> <span class=mf>0.95</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// Good network conditions - increase rate
+</span></span></span><span class=line><span class=cl>                <span class=n>min</span><span class=p>(</span><span class=n>maxRate</span><span class=p>,</span> <span class=n>currentRate</span> <span class=p>*</span> <span class=mf>1.2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=n>avgLatency</span> <span class=p>&gt;</span> <span class=mi>500</span> <span class=o>||</span> <span class=n>successRate</span> <span class=p>&lt;</span> <span class=mf>0.8</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// Poor network conditions - decrease rate
+</span></span></span><span class=line><span class=cl>                <span class=n>max</span><span class=p>(</span><span class=n>minRate</span><span class=p>,</span> <span class=n>currentRate</span> <span class=p>*</span> <span class=mf>0.7</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span> <span class=o>-&gt;</span> <span class=n>currentRate</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Recreate bucket with the new rate
+</span></span></span><span class=line><span class=cl>        <span class=n>tokenBucket</span> <span class=p>=</span> <span class=n>TokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>capacity</span> <span class=p>=</span> <span class=p>(</span><span class=n>currentRate</span> <span class=p>*</span> <span class=mi>10</span><span class=p>).</span><span class=n>toLong</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=n>refillRate</span> <span class=p>=</span> <span class=n>currentRate</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>This follows a principle similar to TCP&rsquo;s congestion control algorithm, employing the AIMD (Additive Increase Multiplicative Decrease) approach.</p><h2 id=token-bucket-vs-other-rate-limiting-algorithms>Token Bucket vs Other Rate Limiting Algorithms</h2><p><img src=leaky_bucket_token_bucket.jpg alt="Token Bucket vs Leaky Bucket"></p><h3 id=algorithm-comparison>Algorithm Comparison</h3><table><thead><tr><th>Algorithm</th><th>Advantages</th><th>Disadvantages</th><th>Suitable Use Cases</th></tr></thead><tbody><tr><td><strong>Token Bucket</strong></td><td>Allows bursts, flexibility</td><td>Implementation complexity</td><td>Mobile apps, API clients</td></tr><tr><td><strong>Leaky Bucket</strong></td><td>Constant output rate</td><td>No burst support</td><td>Streaming, constant throughput needed</td></tr><tr><td><strong>Fixed Window</strong></td><td>Simple implementation</td><td>Boundary problems</td><td>Simple rate limiting</td></tr><tr><td><strong>Sliding Window</strong></td><td>Accuracy</td><td>Memory usage</td><td>Precise control needed</td></tr></tbody></table><p>Why Token Bucket is well-suited for mobile apps:</p><ul><li>User interactions are inherently bursty in nature</li><li>Can flexibly respond to changes in network conditions</li><li>Allows priority adjustment between background and foreground tasks</li></ul><h2 id=monitoring-and-debugging>Monitoring and Debugging</h2><p>The following is a monitoring implementation example for measuring and optimizing the effectiveness of a Token Bucket.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>TokenBucketMonitor</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>tokenBucket</span><span class=p>:</span> <span class=n>TokenBucket</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>val</span> <span class=py>metrics</span> <span class=p>=</span> <span class=n>mutableMapOf</span><span class=p>&lt;</span><span class=n>String</span><span class=p>,</span> <span class=n>AtomicLong</span><span class=p>&gt;()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>init</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;totalRequests&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=n>AtomicLong</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;allowedRequests&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=n>AtomicLong</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;rejectedRequests&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=n>AtomicLong</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;totalTokensConsumed&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=n>AtomicLong</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>recordRequest</span><span class=p>(</span><span class=n>allowed</span><span class=p>:</span> <span class=n>Boolean</span><span class=p>,</span> <span class=n>tokensRequested</span><span class=p>:</span> <span class=n>Long</span> <span class=p>=</span> <span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;totalRequests&#34;</span><span class=p>]</span><span class=o>?.</span><span class=n>incrementAndGet</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>allowed</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;allowedRequests&#34;</span><span class=p>]</span><span class=o>?.</span><span class=n>incrementAndGet</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;totalTokensConsumed&#34;</span><span class=p>]</span><span class=o>?.</span><span class=n>addAndGet</span><span class=p>(</span><span class=n>tokensRequested</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;rejectedRequests&#34;</span><span class=p>]</span><span class=o>?.</span><span class=n>incrementAndGet</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>getMetrics</span><span class=p>():</span> <span class=n>Map</span><span class=p>&lt;</span><span class=n>String</span><span class=p>,</span> <span class=n>Long</span><span class=p>&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>metrics</span><span class=p>.</span><span class=n>mapValues</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=k>get</span><span class=p>()</span> <span class=p>}</span> <span class=p>+</span> <span class=n>mapOf</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;availableTokens&#34;</span> <span class=n>to</span> <span class=n>tokenBucket</span><span class=p>.</span><span class=n>availableTokens</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;rejectionRate&#34;</span> <span class=n>to</span> <span class=n>calculateRejectionRate</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>fun</span> <span class=nf>calculateRejectionRate</span><span class=p>():</span> <span class=n>Long</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>total</span> <span class=p>=</span> <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;totalRequests&#34;</span><span class=p>]</span><span class=o>?.</span><span class=k>get</span><span class=p>()</span> <span class=o>?:</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>rejected</span> <span class=p>=</span> <span class=n>metrics</span><span class=p>[</span><span class=s2>&#34;rejectedRequests&#34;</span><span class=p>]</span><span class=o>?.</span><span class=k>get</span><span class=p>()</span> <span class=o>?:</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=k>if</span> <span class=p>(</span><span class=n>total</span> <span class=p>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>(</span><span class=n>rejected</span> <span class=p>*</span> <span class=mi>100</span> <span class=p>/</span> <span class=n>total</span><span class=p>)</span> <span class=k>else</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// Send to Firebase Analytics or Crashlytics
+</span></span></span><span class=line><span class=cl>    <span class=c1>// Note: This is pseudocode. In practice, pass a Context parameter or inject FirebaseAnalytics.
+</span></span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>reportToAnalytics</span><span class=p>(</span><span class=n>context</span><span class=p>:</span> <span class=n>Context</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>bundle</span> <span class=p>=</span> <span class=n>Bundle</span><span class=p>().</span><span class=n>apply</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>getMetrics</span><span class=p>().</span><span class=n>forEach</span> <span class=p>{</span> <span class=p>(</span><span class=n>key</span><span class=p>,</span> <span class=k>value</span><span class=p>)</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=n>putLong</span><span class=p>(</span><span class=s2>&#34;token_bucket_</span><span class=si>$key</span><span class=s2>&#34;</span><span class=p>,</span> <span class=k>value</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=nc>FirebaseAnalytics</span><span class=p>.</span><span class=n>getInstance</span><span class=p>(</span><span class=n>context</span><span class=p>).</span><span class=n>logEvent</span><span class=p>(</span><span class=s2>&#34;rate_limit_metrics&#34;</span><span class=p>,</span> <span class=n>bundle</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=practical-implementation-considerations>Practical Implementation Considerations</h2><h3 id=1-handling-system-time-changes>1. Handling System Time Changes</h3><p>Use <code>System.nanoTime()</code> to guard against system time changes on Android devices. It is a <code>monotonic clock</code> that is independent of the system clock.</p><h3 id=2-app-lifecycle-considerations>2. App Lifecycle Considerations</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>class</span> <span class=nc>TokenBucketManager</span><span class=p>(</span><span class=k>private</span> <span class=k>val</span> <span class=py>context</span><span class=p>:</span> <span class=n>Context</span><span class=p>)</span> <span class=p>:</span> <span class=n>DefaultLifecycleObserver</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>var</span> <span class=py>tokenBucket</span><span class=p>:</span> <span class=n>TokenBucket</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onStart</span><span class=p>(</span><span class=n>owner</span><span class=p>:</span> <span class=n>LifecycleOwner</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Increase rate when the app comes to the foreground
+</span></span></span><span class=line><span class=cl>        <span class=n>tokenBucket</span> <span class=p>=</span> <span class=n>TokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>capacity</span> <span class=p>=</span> <span class=mi>100</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>refillRate</span> <span class=p>=</span> <span class=mf>10.0</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onStop</span><span class=p>(</span><span class=n>owner</span><span class=p>:</span> <span class=n>LifecycleOwner</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Decrease rate when going to the background
+</span></span></span><span class=line><span class=cl>        <span class=n>tokenBucket</span> <span class=p>=</span> <span class=n>TokenBucket</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>capacity</span> <span class=p>=</span> <span class=mi>10</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>refillRate</span> <span class=p>=</span> <span class=mf>1.0</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=3-memory-efficiency>3. Memory Efficiency</h3><p>Manage Token Bucket instances through singletons or dependency injection (Hilt/Dagger) to optimize memory usage.</p><h2 id=summary>Summary</h2><p>The Token Bucket algorithm is a powerful tool for effectively controlling network requests in mobile apps. By leveraging Kotlin&rsquo;s coroutines and atomic operations, you can achieve an efficient and safe implementation.</p><p>Key takeaways:</p><ul><li><strong>Burst traffic allowance</strong>: Control server load without degrading user experience</li><li><strong>Thread-safe implementation</strong>: Guarantee safe operation in a multi-threaded environment</li><li><strong>Flexible integration</strong>: Easy integration with Retrofit, OkHttp, image loaders, and more</li><li><strong>Adaptive control</strong>: Dynamic adjustment based on network conditions</li></ul><p>Token Bucket goes beyond simple rate limiting &ndash; it is an essential component for stable and efficient network communication. Especially considering the unstable networks and limited resources of mobile environments, proper traffic control can significantly improve app quality.</p><h2 id=references>References</h2><ul><li><a href=https://en.wikipedia.org/wiki/Token_bucket>Token Bucket Algorithm - Wikipedia</a></li></ul></content><p><a href=https://onseok.github.io/tags/algorithm/>#Algorithm</a>
+<a href=https://onseok.github.io/tags/rate-limiting/>#Rate-Limiting</a>
+<a href=https://onseok.github.io/tags/network/>#Network</a></p><hr><script src=https://giscus.app/client.js data-repo=onseok/onseok.github.io data-repo-id=R_kgDOOBxzWA data-category=Comments data-category-id=DIC_kwDOOBxzWM4CnfcD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=en crossorigin=anonymous async></script></main><footer></footer><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js integrity=sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js integrity=sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh crossorigin=anonymous onload='renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\\\(",right:"\\\\)",display:!1},{left:"\\\\[",right:"\\\\]",display:!0}],throwOnError:!1})'></script></body></html>
