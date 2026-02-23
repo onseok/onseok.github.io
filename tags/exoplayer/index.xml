@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>exoplayer on onseok</title><link>https://onseok.github.io/tags/exoplayer/</link><description>Recent content in exoplayer on onseok</description><generator>Hugo</generator><language>en-us</language><copyright>© {year} onseok</copyright><lastBuildDate>Tue, 24 Feb 2026 00:00:00 +0900</lastBuildDate><atom:link href="https://onseok.github.io/tags/exoplayer/index.xml" rel="self" type="application/rss+xml"/><item><title>How AndroidX Media3 Renders Subtitles: A Deep Dive into the Pipeline</title><link>https://onseok.github.io/posts/media3-subtitle-deep-dive/</link><pubDate>Tue, 24 Feb 2026 00:00:00 +0900</pubDate><guid>https://onseok.github.io/posts/media3-subtitle-deep-dive/</guid><description>&lt;style&gt;
+@media (prefers-color-scheme: dark) {
+ [style*="color: #222"] strong,
+ [style*="color: #222"] b,
+ [style*="color: #444"] strong,
+ [style*="color: #444"] b {
+ color: inherit !important;
+ }
+}
+&lt;/style&gt;
+&lt;p&gt;Have you ever wondered what happens between the moment a subtitle file is downloaded and the text appears at the bottom of your video? In AndroidX Media3 (the successor to ExoPlayer), the answer involves a surprisingly deep pipeline of parsers, encoders, resolvers, and renderers.&lt;/p&gt;
+&lt;figure style="margin: 2em 0;"&gt;
+ &lt;img src="subtitle-example.jpg" alt="Subtitles displayed on a video — scene from Charade (1963)" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;" /&gt;
+ &lt;figcaption style="text-align: center; font-size: 0.85em; color: #444; margin-top: 8px;"&gt;
+ Subtitles overlaid on video content. &lt;em&gt;Charade&lt;/em&gt; (1963), public domain.
+ &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;In this post, we&amp;rsquo;ll first explore the fundamentals of subtitle technology — what formats exist, how they differ, and why the problem is harder than it looks — then trace the full journey of a subtitle through Media3&amp;rsquo;s pipeline, from raw &lt;code&gt;.vtt&lt;/code&gt; bytes to rendered pixels. All Media3 code references are based on &lt;strong&gt;&lt;a href="https://github.com/androidx/media"&gt;AndroidX Media3 1.9.2&lt;/a&gt;&lt;/strong&gt; (the latest stable release as of February 2026).&lt;/p&gt;</description></item></channel></rss>
