@@ -1,11 +1,49 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>gpu on onseok</title><link>https://onseok.github.io/tags/gpu/</link><description>Recent content in gpu on onseok</description><generator>Hugo</generator><language>en-us</language><copyright>© {year} onseok</copyright><lastBuildDate>Tue, 10 Mar 2026 00:00:00 +0900</lastBuildDate><atom:link href="https://onseok.github.io/tags/gpu/index.xml" rel="self" type="application/rss+xml"/><item><title>Real-Time Video Post-Processing on Android with OpenGL ES Fragment Shaders</title><link>https://onseok.github.io/posts/realtime-video-enhancement-android-opengl/</link><pubDate>Tue, 10 Mar 2026 00:00:00 +0900</pubDate><guid>https://onseok.github.io/posts/realtime-video-enhancement-android-opengl/</guid><description>&lt;style&gt;
-@media (prefers-color-scheme: dark) {
- [style*="color: #222"] strong,
- [style*="color: #222"] b,
- [style*="color: #444"] strong,
- [style*="color: #444"] b {
- color: inherit !important;
- }
+/* Pipeline flow diagrams */
+.pipe-flow {
+ display: flex; align-items: center; gap: 6px;
+ margin: 1.5em 0; overflow-x: auto; padding: 4px 0;
 }
+.pipe-box {
+ padding: 10px 14px; border: 1.5px solid var(--text-color);
+ border-radius: 5px; text-align: center; white-space: nowrap;
+ font-size: 0.88em; color: var(--text-color);
+}
+.pipe-box strong { color: var(--heading-color); display: block; }
+.pipe-box .sub { font-size: 0.8em; opacity: 0.65; }
+.pipe-box.accent {
+ border-color: #e05040; border-width: 2px;
+}
+.pipe-arrow { opacity: 0.4; font-size: 1.1em; flex-shrink: 0; }
+.pipe-step { font-size: 0.7em; opacity: 0.5; display: block; margin-bottom: 2px; }
+
+/* Variant selection cards */
+.variant-grid {
+ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1.5em 0;
+}
+@media (max-width: 520px) { .variant-grid { grid-template-columns: 1fr; } }
+.variant-card {
+ border: 1.5px solid var(--text-color); border-radius: 6px;
+ padding: 16px; font-size: 0.88em; line-height: 1.8;
+ color: var(--text-color);
+}
+.variant-card.green { border-left: 4px solid #4caf50; }
+.variant-card.red { border-left: 4px solid #e05040; }
+.variant-card h4 {
+ margin: 0 0 10px 0; font-size: 1em;
+ color: var(--heading-color);
+}
+.variant-card .label { opacity: 0.6; }
+
+/* Frame budget box */
+.budget-box {
+ margin: 1.5em 0; padding: 16px 20px;
+ border: 1.5px solid var(--text-color); border-radius: 6px;
+ font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.88em; line-height: 1.9;
+ color: var(--text-color);
+}
+.budget-box .title { font-weight: 600; color: var(--heading-color); margin-bottom: 8px; display: block; }
+.budget-box .sep { opacity: 0.3; }
+.budget-box .result { font-weight: 600; color: var(--heading-color); }
 &lt;/style&gt;
-&lt;p&gt;Every modern video player on Android eventually does the same thing: feeds compressed video into &lt;code&gt;MediaCodec&lt;/code&gt;, lets the hardware decoder turn it into raw frames, and pushes those frames to a &lt;code&gt;Surface&lt;/code&gt; for display. The entire process is optimized to be invisible. And for 99% of use cases, that is exactly what you want.&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;Every modern video player on Android eventually does the same thing: feeds compressed video into &lt;a href="https://developer.android.com/reference/android/media/MediaCodec"&gt;&lt;code&gt;MediaCodec&lt;/code&gt;&lt;/a&gt;, lets the hardware decoder turn it into raw frames, and pushes those frames to a &lt;a href="https://developer.android.com/reference/android/view/Surface"&gt;&lt;code&gt;Surface&lt;/code&gt;&lt;/a&gt; for display. The entire process is optimized to be invisible. And for 99% of use cases, that is exactly what you want.&lt;/p&gt;</description></item></channel></rss>
