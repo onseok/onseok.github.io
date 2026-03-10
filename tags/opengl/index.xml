@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>opengl on onseok</title><link>https://onseok.github.io/tags/opengl/</link><description>Recent content in opengl on onseok</description><generator>Hugo</generator><language>en-us</language><copyright>© {year} onseok</copyright><lastBuildDate>Tue, 10 Mar 2026 00:00:00 +0900</lastBuildDate><atom:link href="https://onseok.github.io/tags/opengl/index.xml" rel="self" type="application/rss+xml"/><item><title>Real-Time Video Post-Processing on Android with OpenGL ES Fragment Shaders</title><link>https://onseok.github.io/posts/realtime-video-enhancement-android-opengl/</link><pubDate>Tue, 10 Mar 2026 00:00:00 +0900</pubDate><guid>https://onseok.github.io/posts/realtime-video-enhancement-android-opengl/</guid><description>&lt;style&gt;
+@media (prefers-color-scheme: dark) {
+ [style*="color: #222"] strong,
+ [style*="color: #222"] b,
+ [style*="color: #444"] strong,
+ [style*="color: #444"] b {
+ color: inherit !important;
+ }
+}
+&lt;/style&gt;
+&lt;p&gt;Every modern video player on Android eventually does the same thing: feeds compressed video into &lt;code&gt;MediaCodec&lt;/code&gt;, lets the hardware decoder turn it into raw frames, and pushes those frames to a &lt;code&gt;Surface&lt;/code&gt; for display. The entire process is optimized to be invisible. And for 99% of use cases, that is exactly what you want.&lt;/p&gt;</description></item></channel></rss>
