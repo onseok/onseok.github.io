@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>proguard on onseok</title><link>https://onseok.github.io/tags/proguard/</link><description>Recent content in proguard on onseok</description><generator>Hugo</generator><language>en-us</language><copyright>© {year} onseok</copyright><lastBuildDate>Sun, 10 May 2026 00:00:00 +0900</lastBuildDate><atom:link href="https://onseok.github.io/tags/proguard/index.xml" rel="self" type="application/rss+xml"/><item><title>R8 for Library Authors</title><link>https://onseok.github.io/posts/r8-library-optimization-deep-dive/</link><pubDate>Sun, 10 May 2026 00:00:00 +0900</pubDate><guid>https://onseok.github.io/posts/r8-library-optimization-deep-dive/</guid><description>&lt;style&gt;
+.pf { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 1.5em 0; }
+.pf .ar { opacity: 0.5; font-size: 1.1em; align-self: center; }
+.pb { padding: 8px 10px; border: 1.5px solid var(--text-color); border-radius: 6px; text-align: center; font-size: 0.82em; min-width: 90px; display: flex; flex-direction: column; justify-content: center; }
+.pb .num { font-size: 0.7em; opacity: 0.6; display: block; margin-bottom: 2px; }
+.pb strong { display: block; font-size: 0.95em; }
+.pb .detail { font-size: 0.72em; opacity: 0.7; margin-top: 3px; font-family: monospace; }
+.cg { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1.5em 0; }
+@media (max-width: 600px) { .cg { grid-template-columns: 1fr; } }
+.cc { border: 1.5px solid var(--text-color); border-radius: 6px; padding: 14px; }
+.cc.green { border-left: 4px solid #4caf50; }
+.cc.orange { border-left: 4px solid #ff9800; }
+.cc.red { border-left: 4px solid #e53935; }
+.cc h4 { margin: 0 0 6px; }
+.cc .tag { font-size: 0.78em; opacity: 0.6; }
+.cc ul { margin: 8px 0 0; padding-left: 18px; font-size: 0.9em; line-height: 1.6; }
+.sc { margin: 1.5em 0; padding: 14px 16px; border: 1.5px solid var(--text-color); border-left: 4px solid var(--link-color); border-radius: 0 6px 6px 0; font-size: 0.92em; line-height: 1.7; }
+.tl { margin: 1.5em 0; }
+.tl-row { display: flex; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--text-color); opacity: 0.95; }
+.tl-row:last-child { border-bottom: none; }
+.tl-ver { width: 90px; flex-shrink: 0; font-weight: bold; font-family: monospace; font-size: 0.9em; padding-top: 2px; }
+.tl-body { flex: 1; font-size: 0.9em; line-height: 1.5; }
+.tl-body .h { font-weight: bold; display: block; margin-bottom: 2px; }
+.bits { display: flex; gap: 4px; flex-wrap: wrap; margin: 8px 0; font-family: monospace; font-size: 0.8em; }
+.bit { padding: 3px 8px; border: 1px solid var(--text-color); border-radius: 3px; }
+.bit.on { background: var(--text-color); color: var(--background-color); }
+figcaption { color: var(--text-color); opacity: 0.75; text-align: center; font-size: 0.85em; margin-top: 8px; }
+.fs { border: 1.5px solid var(--text-color); border-radius: 6px; padding: 14px; margin: 1.5em 0; font-family: monospace; font-size: 0.85em; line-height: 1.55; white-space: pre; overflow-x: auto; }
+&lt;/style&gt;
+&lt;p&gt;Library authors ship &lt;code&gt;consumer-rules.pro&lt;/code&gt; files inside their AARs. Every consumer of the library merges those rules into their own R8 invocation. A &lt;code&gt;-keep class com.mylib.** { *; }&lt;/code&gt; added years ago to fix a crash is still applied to every release build of every app depending on the library, blocking R8 from shrinking and optimizing the code in those apps. Most of us write these rules without thinking too hard about what they cost.&lt;/p&gt;</description></item></channel></rss>
